@@ -16,8 +16,28 @@
       {
         "command": "folder-comparator.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "folder-comparator.selectForCompare",
+        "title": "Select Folder for Compare"
+      },
+      {
+        "command": "folder-comparator.compareWithSelected",
+        "title": "Compare Folder with Selected"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [{
+        "command": "folder-comparator.selectForCompare",
+        "group": "context@1",
+        "when": "explorerResourceIsFolder"
+      },
+      {
+        "command": "folder-comparator.compareWithSelected",
+        "group": "context@2",
+        "when": "explorerResourceIsFolder && folder-comparator.showCompareWithSelected"
+      }]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
