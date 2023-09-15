@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let compareToPath: string;
 
 	vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
+	vscode.commands.executeCommand('setContext', 'folder-comparator.showView', false);
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -31,12 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log(`Selection made to compare from '${compareFromPath}' to '${compareToPath}'`)
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath)}' for comparison`);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', true);
+		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', false);
 	});
 
 	let compareWithSelected = vscode.commands.registerCommand('folder-comparator.compareWithSelected', async (context: vscode.Uri) => {
 		compareToPath = context.path;
 		console.log(`Selection made to compare from '${compareFromPath}' to '${compareToPath}'`)
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
+		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', true);
 	});
 
 	context.subscriptions.push(disposable);

@@ -37,6 +37,16 @@
         "group": "context@2",
         "when": "explorerResourceIsFolder && folder-comparator.showCompareWithSelected"
       }]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "folderComparator",
+          "name": "Folder Comparator",
+          "when": "folder-comparator.showView",
+          "contextualTitle": "Folder Comparator"
+        }
+      ]
     }
   },
   "scripts": {
