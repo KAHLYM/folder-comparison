@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as view from './view';
 
 var path = require('path');
 
@@ -40,6 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log(`Selection made to compare from '${compareFromPath}' to '${compareToPath}'`)
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', true);
+		new view.FileExplorer();
 	});
 
 	context.subscriptions.push(disposable);
