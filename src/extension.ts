@@ -13,8 +13,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "folder-comparator" is now active!');
 
-	let compareFromPath: string;
-	let compareToPath: string;
+	let compareFromPath: vscode.Uri;
+	let compareToPath: vscode.Uri;
 
 	vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
 	vscode.commands.executeCommand('setContext', 'folder-comparator.showView', false);
@@ -29,19 +29,19 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let selectForCompare = vscode.commands.registerCommand('folder-comparator.selectForCompare', async (context: vscode.Uri) => {
-		compareFromPath = context.path;
-		console.log(`Selection made to compare from '${compareFromPath}' to '${compareToPath}'`)
-		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath)}' for comparison`);
+		compareFromPath = context;
+		console.log(`Selection made to compare from '${compareFromPath.path}'`)
+		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', true);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', false);
 	});
 
 	let compareWithSelected = vscode.commands.registerCommand('folder-comparator.compareWithSelected', async (context: vscode.Uri) => {
-		compareToPath = context.path;
-		console.log(`Selection made to compare from '${compareFromPath}' to '${compareToPath}'`)
+		compareToPath = context;
+		console.log(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', true);
-		new view.FileExplorer();
+		new view.FileExplorer(compareFromPath);
 	});
 
 	context.subscriptions.push(disposable);
