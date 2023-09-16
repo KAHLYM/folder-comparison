@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', true);
-		new view.FileExplorer(compareFromPath);
+		new view.FileExplorer(compareFromPath, compareToPath);
 	});
 
 	context.subscriptions.push(disposable);
