@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as fsp from './view/file-system-provider';
+import * as esdp from './view/entry-state-decorator-provider';
 
 var path = require('path');
 
@@ -7,6 +8,7 @@ export class FileExplorer {
 	constructor(left: vscode.Uri, right: vscode.Uri) {
 		const treeDataProvider = new fsp.FileSystemProvider(left, right);
 		vscode.window.createTreeView('folderComparator', { treeDataProvider });
+		new esdp.EntryStateDecorationProvider();
 	}
 }
 
