@@ -9,9 +9,6 @@ interface Entry {
 
 export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
 
-    private readonly _onDidFileSystemChange: vscode.EventEmitter<string[]> = new vscode.EventEmitter();
-    public readonly onDidFileSystemChange = this._onDidFileSystemChange.event;
-
     private left: vscode.Uri;
     private right: vscode.Uri;
 
@@ -64,7 +61,6 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
                 visited.add(name);
                 let uri: vscode.Uri = vscode.Uri.file(path.join(this.right.fsPath, name));
                 entries.push({ uri: uri, type });
-                this._onDidFileSystemChange.fire([uri.toString()]);
             });
         }
 
@@ -74,7 +70,6 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
                 if (!visited.has(name)) {
                     let uri: vscode.Uri = vscode.Uri.file(path.join(this.right.fsPath, name));
                     entries.push({ uri: uri, type });
-                    this._onDidFileSystemChange.fire([uri.toString()]);
                 }
             });
         }
