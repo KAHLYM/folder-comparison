@@ -2,9 +2,16 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utilities from '../utilities';
 
+enum Root {
+    Left = 1,
+    Right = 2,
+}
+
 interface Entry {
     uri: vscode.Uri;
     type: vscode.FileType;
+    root: Root;
+    subpath: string;
 }
 
 export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
@@ -25,17 +32,16 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
         return new utilities.FileStat(await utilities.stat(path));
     }
 
-    readDirectory(uri: vscode.Uri): [string, vscode.FileType][] | Thenable<[string, vscode.FileType][]> {
-        return this._readDirectory(uri);
+    readDirectory(directory: string): [string, vscode.FileType][] | Thenable<[string, vscode.FileType][]> {
+        return this._readDirectory(directory);
     }
 
-    async _readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-        const children = await utilities.readdir(uri.fsPath);
+    async _readDirectory(directory: string): Promise<[string, vscode.FileType][]> {
+        const children = await utilities.readdir(directory);
 
         const result: [string, vscode.FileType][] = [];
-        for (let i = 0; i < children.length; i++) {
-            const child = children[i];
-            const stat = await this._stat(path.join(uri.fsPath, child));
+        for (const child of children) {
+            const stat = await this._stat(path.join(directory, child));
             result.push([child, stat.type]);
         }
 
@@ -46,40 +52,65 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
         return utilities.readfile(uri.fsPath);
     }
 
+    makeUri(filepath: string): vscode.Uri {
+        return vscode.Uri.file(filepath);
+    }
+
     async getChildren(element?: Entry): Promise<Entry[]> {
+        let cache: Record<string, Entry> = {};
+        let entries: Entry[] = [];
+
         if (element) {
-            const children = await this.readDirectory(element.uri);
-            return children.map(([name, type]) => ({ uri: vscode.Uri.file(path.join(element.uri.fsPath, name)), type }));
+            if (element.root & Root.Left) {
+                const children = await this.readDirectory(path.join(this.left.fsPath, element.subpath));
+                children.map(([name, type]) => {
+                    let namepath: string = path.join(element.subpath, name);
+                    cache[name] = { uri: this.makeUri(namepath), type: type, root: Root.Left, subpath: namepath };
+                });
+            }
+            
+            if (element.root & Root.Right) {
+                const children = await this.readDirectory(path.join(this.right.fsPath, element.subpath));
+                children.map(([name, type]) => {
+                    if (cache[name] != undefined) {
+                        cache[name].root |= Root.Right;
+                    } else {
+                    let namepath: string = path.join(element.subpath, name);
+                    cache[name] = { uri: this.makeUri(namepath), type: type, root: Root.Right, subpath: namepath };
+                    }
+                });
+            }
+        } else { // getChildren called against root directories
+            if (this.left) {
+                const children = await this.readDirectory(this.left.fsPath);
+                children.map(([name, type]) => {
+                    cache[name] = { uri: this.makeUri(name), type: type, root: Root.Left, subpath: name };
+                });
+            }
+
+            if (this.right) {
+                const children = await this.readDirectory(this.right.fsPath);
+                children.map(([name, type]) => {
+                    if (cache[name] != undefined) {
+                        cache[name].root |= Root.Right;
+                    } else {
+                        cache[name] = { uri: this.makeUri(name), type: type, root: Root.Right, subpath: name };
+                    }
+                });
+            }
         }
 
-        var entries: Entry[] = [];
-        var visited: Set<string> = new Set<string>();
-
-        if (this.left) {
-            const children = await this.readDirectory(this.left);
-            children.map(([name, type]) => {
-                visited.add(name);
-                let uri: vscode.Uri = vscode.Uri.file(path.join(this.right.fsPath, name));
-                entries.push({ uri: uri, type });
-            });
-        }
-
-        if (this.right) {
-            const children = await this.readDirectory(this.right);
-            children.map(([name, type]) => {
-                if (!visited.has(name)) {
-                    let uri: vscode.Uri = vscode.Uri.file(path.join(this.right.fsPath, name));
-                    entries.push({ uri: uri, type });
-                }
-            });
-        }
-
+        entries = Object.values(cache); 
         entries.sort((a, b) => {
             if (a.type === b.type) {
                 return a.uri.path.localeCompare(b.uri.path);
             }
             return a.type === vscode.FileType.Directory ? -1 : 1;
         });
+
+        for (const entry of entries) {
+            console.log("getChildren", entry.uri);
+        }
 
         return entries;
     }
