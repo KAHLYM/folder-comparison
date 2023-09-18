@@ -1,9 +1,16 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as view from './view';
+import * as fsp from './view/file-system-provider';
 
 var path = require('path');
+
+export class FileExplorer {
+	constructor(left: vscode.Uri, right: vscode.Uri) {
+		const treeDataProvider = new fsp.FileSystemProvider(left, right);
+		vscode.window.createTreeView('folderComparator', { treeDataProvider });
+	}
+}
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -28,20 +35,21 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from Folder Comparator!');
 	});
 
-	let selectForCompare = vscode.commands.registerCommand('folder-comparator.selectForCompare', async (context: vscode.Uri) => {
-		compareFromPath = context;
+	let selectForCompare = vscode.commands.registerCommand('folder-comparator.selectForCompare', async (uri: vscode.Uri) => {
+		compareFromPath = uri;
 		console.log(`Selection made to compare from '${compareFromPath.path}'`)
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', true);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', false);
 	});
 
-	let compareWithSelected = vscode.commands.registerCommand('folder-comparator.compareWithSelected', async (context: vscode.Uri) => {
-		compareToPath = context;
+	let compareWithSelected = vscode.commands.registerCommand('folder-comparator.compareWithSelected', async (uri: vscode.Uri) => {
+		compareToPath = uri;
 		console.log(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folder-comparator.showView', true);
-		new view.FileExplorer(compareFromPath, compareToPath);
+
+		new FileExplorer(compareFromPath, compareToPath);
 	});
 
 	context.subscriptions.push(disposable);
@@ -50,4 +58,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

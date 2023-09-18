@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as utilities from './utilities';
+import * as utilities from '../utilities';
 
 interface Entry {
     uri: vscode.Uri;
@@ -9,8 +9,11 @@ interface Entry {
 
 export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
 
-    left: vscode.Uri;
-    right: vscode.Uri;
+    private readonly _onDidFileSystemChange: vscode.EventEmitter<string[]> = new vscode.EventEmitter();
+    public readonly onDidFileSystemChange = this._onDidFileSystemChange.event;
+
+    private left: vscode.Uri;
+    private right: vscode.Uri;
 
     constructor(left: vscode.Uri, right: vscode.Uri) {
         this.left = left;
@@ -42,7 +45,6 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
         return Promise.resolve(result);
     }
 
-
     readFile(uri: vscode.Uri): Uint8Array | Thenable<Uint8Array> {
         return utilities.readfile(uri.fsPath);
     }
@@ -60,7 +62,9 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
             const children = await this.readDirectory(this.left);
             children.map(([name, type]) => {
                 visited.add(name);
-                entries.push({ uri: vscode.Uri.file(path.join(this.left.fsPath, name)), type });
+                let uri: vscode.Uri = vscode.Uri.file(path.join(this.right.fsPath, name));
+                entries.push({ uri: uri, type });
+                this._onDidFileSystemChange.fire([uri.toString()]);
             });
         }
 
@@ -68,7 +72,9 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
             const children = await this.readDirectory(this.right);
             children.map(([name, type]) => {
                 if (!visited.has(name)) {
-                    entries.push({ uri: vscode.Uri.file(path.join(this.right.fsPath, name)), type });
+                    let uri: vscode.Uri = vscode.Uri.file(path.join(this.right.fsPath, name));
+                    entries.push({ uri: uri, type });
+                    this._onDidFileSystemChange.fire([uri.toString()]);
                 }
             });
         }
@@ -86,21 +92,8 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
     getTreeItem(element: Entry): vscode.TreeItem {
         const treeItem = new vscode.TreeItem(element.uri, element.type === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
         if (element.type === vscode.FileType.File) {
-            treeItem.command = { command: 'fileExplorer.openFile', title: "Open File", arguments: [element.uri], };
             treeItem.contextValue = 'file';
         }
         return treeItem;
-    }
-}
-
-export class FileExplorer {
-    constructor(left: vscode.Uri, right: vscode.Uri) {
-        const treeDataProvider = new FileSystemProvider(left, right);
-        vscode.window.createTreeView('folderComparator', { treeDataProvider });
-        vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
-    }
-
-    private openResource(resource: vscode.Uri): void {
-        vscode.window.showTextDocument(resource);
     }
 }
