@@ -26,6 +26,8 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     getState(uri: vscode.Uri): State {
         if (uri.path.endsWith(".txt")) {
             return State.Modified;
+        } else if(uri.path.endsWith(".md")) {
+            return State.Added;
         } else {
             return State.Null;
         }
@@ -37,19 +39,22 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     }
 
     provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {
+        if (uri.scheme != "file-comparator") {
+            return null;
+        }
 
         switch (this.getState(uri)) {
             case State.Null: {
                 break;
             }
             case State.Removed: {
-                break;
+                return new vscode.FileDecoration("D", "deleted", new vscode.ThemeColor("foldercomparator.color.deleted"));
             }
             case State.Modified: {
-                break;
+                return new vscode.FileDecoration("M", "modified", new vscode.ThemeColor("foldercomparator.color.modified"));
             }
             case State.Added: {
-                break;
+                return new vscode.FileDecoration("A", "added", new vscode.ThemeColor("foldercomparator.color.added"));
             }
             default: {
                 break;

@@ -12,6 +12,68 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "colors": [
+        {
+          "id": "foldercomparator.color.added",
+          "description": "added",
+          "defaults": {
+            "light": "#587c0c",
+            "dark": "#81b88b",
+            "highContrast": "#a1e3ad",
+            "highContrastLight": "#374e06"
+          }
+        },
+        {
+          "id": "foldercomparator.color.modified",
+          "description": "modified",
+          "defaults": {
+            "light": "#895503",
+            "dark": "#E2C08D",
+            "highContrast": "#E2C08D",
+            "highContrastLight": "#895503"
+          }
+        },
+        {
+          "id": "foldercomparator.color.deleted",
+          "description": "deleted",
+          "defaults": {
+            "light": "#ad0707",
+            "dark": "#c74e39",
+            "highContrast": "#c74e39",
+            "highContrastLight": "#ad0707"
+          }
+        },
+        {
+          "id": "foldercomparator.color.renamed",
+          "description": "renamed",
+          "defaults": {
+            "light": "#007100",
+            "dark": "#73C991",
+            "highContrast": "#73C991",
+            "highContrastLight": "#007100"
+          }
+        },
+        {
+          "id": "foldercomparator.color.untracked",
+          "description": "untracked",
+          "defaults": {
+            "light": "#007100",
+            "dark": "#73C991",
+            "highContrast": "#73C991",
+            "highContrastLight": "#007100"
+          }
+        },
+        {
+          "id": "foldercomparator.color.ignored",
+          "description": "ignored",
+          "defaults": {
+            "light": "#8E8E90",
+            "dark": "#8C8C8C",
+            "highContrast": "#A7A8A9",
+            "highContrastLight": "#8e8e90"
+          }
+        }
+    ],
     "commands": [
       {
         "command": "folder-comparator.helloWorld",

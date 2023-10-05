@@ -53,7 +53,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
     }
 
     makeUri(filepath: string): vscode.Uri {
-        return vscode.Uri.file(filepath);
+        return vscode.Uri.parse("file-comparator:///" + filepath);
     }
 
     async getChildren(element?: Entry): Promise<Entry[]> {
