@@ -34,7 +34,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     }
 
     async updateFileDecoration(uri: vscode.Uri): Promise<void> {
-        console.log("updateActiveEditor entered with uri ", uri);
+        console.log("updateFileDecoration ", uri.path);
         this._onDidChangeDecorations.fire([uri]);
     }
 
@@ -48,13 +48,19 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
                 break;
             }
             case State.Removed: {
-                return new vscode.FileDecoration("D", "deleted", new vscode.ThemeColor("foldercomparator.color.deleted"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("D", "deleted", new vscode.ThemeColor("foldercomparator.color.deleted"));
+                decoration.propagate = true;
+                return decoration;
             }
             case State.Modified: {
-                return new vscode.FileDecoration("M", "modified", new vscode.ThemeColor("foldercomparator.color.modified"));
+                let decoration: vscode.FileDecoration =  new vscode.FileDecoration("M", "modified", new vscode.ThemeColor("foldercomparator.color.modified"));
+                decoration.propagate = true;
+                return decoration;
             }
             case State.Added: {
-                return new vscode.FileDecoration("A", "added", new vscode.ThemeColor("foldercomparator.color.added"));
+                let decoration: vscode.FileDecoration =  new vscode.FileDecoration("A", "added", new vscode.ThemeColor("foldercomparator.color.added"));
+                decoration.propagate = true;
+                return decoration;
             }
             default: {
                 break;

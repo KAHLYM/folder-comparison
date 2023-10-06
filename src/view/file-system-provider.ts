@@ -7,7 +7,7 @@ enum Root {
     Right = 2,
 }
 
-interface Entry {
+interface Entry { 
     uri: vscode.Uri;
     type: vscode.FileType;
     root: Root;
@@ -53,7 +53,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
     }
 
     makeUri(filepath: string): vscode.Uri {
-        return vscode.Uri.parse("file-comparator:///" + filepath);
+        return vscode.Uri.parse("file-comparator:///" + filepath.replace("\\", "/"));
     }
 
     async getChildren(element?: Entry): Promise<Entry[]> {
@@ -109,7 +109,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
         });
 
         for (const entry of entries) {
-            console.log("getChildren", entry.uri);
+            console.log("getChildren", entry.uri.path);
         }
 
         return entries;
