@@ -51,7 +51,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     makeUri(filepath: string): Uri {
-        return Uri.parse("file-comparator:///" + filepath.replace("\\", "/"));
+        return Uri.parse("file-comparator:///" + filepath.replaceAll("\\", "/"));
     }
 
     async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
