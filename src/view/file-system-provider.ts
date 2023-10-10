@@ -7,14 +7,20 @@ enum Root {
     Right = 2,
 }
 
-interface Entry { 
-    uri: Uri;
-    type: FileType;
-    root: Root;
-    subpath: string;
+class FileTreeItem extends TreeItem { 
+    public filetype: FileType;
+    public root: Root;
+    public subpath: string;
+
+    constructor(resourceUri: Uri, filetype: FileType, root: Root, subpath: string) {
+        super(resourceUri);
+        this.filetype = filetype;
+        this.root = root;
+        this.subpath = subpath;
+    }
 }
 
-export class FileSystemProvider implements TreeDataProvider<Entry> {
+export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     private left: Uri;
     private right: Uri;
@@ -56,16 +62,16 @@ export class FileSystemProvider implements TreeDataProvider<Entry> {
         return Uri.parse("file-comparator:///" + filepath.replace("\\", "/"));
     }
 
-    async getChildren(element?: Entry): Promise<Entry[]> {
-        let cache: Record<string, Entry> = {};
-        let entries: Entry[] = [];
+    async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
+        let cache: Record<string, FileTreeItem> = {};
+        let entries: FileTreeItem[] = [];
 
         if (element) {
             if (element.root & Root.Left) {
                 const children = await this.readDirectory(path.join(this.left.fsPath, element.subpath));
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.subpath, name);
-                    cache[name] = { uri: this.makeUri(namepath), type: type, root: Root.Left, subpath: namepath };
+                    cache[name] = new FileTreeItem(this.makeUri(namepath), type, Root.Left, namepath);
                 });
             }
             
@@ -76,7 +82,7 @@ export class FileSystemProvider implements TreeDataProvider<Entry> {
                         cache[name].root |= Root.Right;
                     } else {
                     let namepath: string = path.join(element.subpath, name);
-                    cache[name] = { uri: this.makeUri(namepath), type: type, root: Root.Right, subpath: namepath };
+                    cache[name] = new FileTreeItem(this.makeUri(namepath), type, Root.Right, namepath);
                     }
                 });
             }
@@ -84,7 +90,7 @@ export class FileSystemProvider implements TreeDataProvider<Entry> {
             if (this.left) {
                 const children = await this.readDirectory(this.left.fsPath);
                 children.map(([name, type]) => {
-                    cache[name] = { uri: this.makeUri(name), type: type, root: Root.Left, subpath: name };
+                    cache[name] = new FileTreeItem(this.makeUri(name), type, Root.Left, name);
                 });
             }
 
@@ -94,7 +100,7 @@ export class FileSystemProvider implements TreeDataProvider<Entry> {
                     if (cache[name] != undefined) {
                         cache[name].root |= Root.Right;
                     } else {
-                        cache[name] = { uri: this.makeUri(name), type: type, root: Root.Right, subpath: name };
+                        cache[name] = new FileTreeItem(this.makeUri(name), type, Root.Right, name);
                     }
                 });
             }
@@ -102,24 +108,25 @@ export class FileSystemProvider implements TreeDataProvider<Entry> {
 
         entries = Object.values(cache); 
         entries.sort((a, b) => {
-            if (a.type === b.type) {
-                return a.uri.path.localeCompare(b.uri.path);
+            if (a.filetype === b.filetype && a.resourceUri && b.resourceUri) {
+                return a.resourceUri.path.localeCompare(b.resourceUri.path);
             }
-            return a.type === FileType.Directory ? -1 : 1;
+            return a.filetype === FileType.Directory ? -1 : 1;
         });
-
-        for (const entry of entries) {
-            console.log("getChildren", entry.uri.path);
-        }
 
         return entries;
     }
 
-    getTreeItem(element: Entry): TreeItem {
-        const treeItem = new TreeItem(element.uri, element.type === FileType.Directory ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None);
-        if (element.type === FileType.File) {
-            treeItem.contextValue = 'file';
+    getTreeItem(element: FileTreeItem): TreeItem {
+        if (element.resourceUri) {
+            const treeItem = new TreeItem(element.resourceUri, element.filetype === FileType.Directory ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None);
+            if (element.filetype === FileType.File) {
+                treeItem.contextValue = 'file';
+            }
+            return treeItem;
         }
+
+        const treeItem = new TreeItem("<unresolved-uri>")
         return treeItem;
     }
 }
