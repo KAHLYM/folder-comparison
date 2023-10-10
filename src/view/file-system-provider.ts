@@ -30,19 +30,15 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         this.right = right;
     }
 
-    stat(uri: Uri): FileStat | Thenable<FileStat> {
-        return this._stat(uri.fsPath);
-    }
-
-    async _stat(path: string): Promise<FileStat> {
+    private async _stat(path: string): Promise<FileStat> {
         return new utilities.FileStat(await utilities.stat(path));
     }
 
-    readDirectory(directory: string): [string, FileType][] | Thenable<[string, FileType][]> {
+    private readDirectory(directory: string): [string, FileType][] | Thenable<[string, FileType][]> {
         return this._readDirectory(directory);
     }
 
-    async _readDirectory(directory: string): Promise<[string, FileType][]> {
+    private async _readDirectory(directory: string): Promise<[string, FileType][]> {
         const children = await utilities.readdir(directory);
 
         const result: [string, FileType][] = [];
@@ -52,10 +48,6 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         }
 
         return Promise.resolve(result);
-    }
-
-    readFile(uri: Uri): Uint8Array | Thenable<Uint8Array> {
-        return utilities.readfile(uri.fsPath);
     }
 
     makeUri(filepath: string): Uri {
