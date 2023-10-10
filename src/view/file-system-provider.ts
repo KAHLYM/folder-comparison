@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utilities from '../utilities';
+import { TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
 
 enum Root {
     Left = 1,
@@ -8,38 +8,38 @@ enum Root {
 }
 
 interface Entry { 
-    uri: vscode.Uri;
-    type: vscode.FileType;
+    uri: Uri;
+    type: FileType;
     root: Root;
     subpath: string;
 }
 
-export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
+export class FileSystemProvider implements TreeDataProvider<Entry> {
 
-    private left: vscode.Uri;
-    private right: vscode.Uri;
+    private left: Uri;
+    private right: Uri;
 
-    constructor(left: vscode.Uri, right: vscode.Uri) {
+    constructor(left: Uri, right: Uri) {
         this.left = left;
         this.right = right;
     }
 
-    stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
+    stat(uri: Uri): FileStat | Thenable<FileStat> {
         return this._stat(uri.fsPath);
     }
 
-    async _stat(path: string): Promise<vscode.FileStat> {
+    async _stat(path: string): Promise<FileStat> {
         return new utilities.FileStat(await utilities.stat(path));
     }
 
-    readDirectory(directory: string): [string, vscode.FileType][] | Thenable<[string, vscode.FileType][]> {
+    readDirectory(directory: string): [string, FileType][] | Thenable<[string, FileType][]> {
         return this._readDirectory(directory);
     }
 
-    async _readDirectory(directory: string): Promise<[string, vscode.FileType][]> {
+    async _readDirectory(directory: string): Promise<[string, FileType][]> {
         const children = await utilities.readdir(directory);
 
-        const result: [string, vscode.FileType][] = [];
+        const result: [string, FileType][] = [];
         for (const child of children) {
             const stat = await this._stat(path.join(directory, child));
             result.push([child, stat.type]);
@@ -48,12 +48,12 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
         return Promise.resolve(result);
     }
 
-    readFile(uri: vscode.Uri): Uint8Array | Thenable<Uint8Array> {
+    readFile(uri: Uri): Uint8Array | Thenable<Uint8Array> {
         return utilities.readfile(uri.fsPath);
     }
 
-    makeUri(filepath: string): vscode.Uri {
-        return vscode.Uri.parse("file-comparator:///" + filepath.replace("\\", "/"));
+    makeUri(filepath: string): Uri {
+        return Uri.parse("file-comparator:///" + filepath.replace("\\", "/"));
     }
 
     async getChildren(element?: Entry): Promise<Entry[]> {
@@ -105,7 +105,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
             if (a.type === b.type) {
                 return a.uri.path.localeCompare(b.uri.path);
             }
-            return a.type === vscode.FileType.Directory ? -1 : 1;
+            return a.type === FileType.Directory ? -1 : 1;
         });
 
         for (const entry of entries) {
@@ -115,9 +115,9 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry> {
         return entries;
     }
 
-    getTreeItem(element: Entry): vscode.TreeItem {
-        const treeItem = new vscode.TreeItem(element.uri, element.type === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
-        if (element.type === vscode.FileType.File) {
+    getTreeItem(element: Entry): TreeItem {
+        const treeItem = new TreeItem(element.uri, element.type === FileType.Directory ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None);
+        if (element.type === FileType.File) {
             treeItem.contextValue = 'file';
         }
         return treeItem;
