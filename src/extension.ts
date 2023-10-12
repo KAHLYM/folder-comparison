@@ -8,7 +8,7 @@ export class FileExplorer {
 	constructor(left: vscode.Uri, right: vscode.Uri) {
 		const treeDataProvider = new fsp.FileSystemProvider(left, right);
 		vscode.window.createTreeView('folderComparator', { treeDataProvider });
-		new esdp.EntryStateDecorationProvider();
+		new esdp.EntryStateDecorationProvider(left, right);
 	}
 }
 

@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as utilities from '../utilities';
+import * as fs from 'fs';
 
 enum State {
     Null = 0,
@@ -18,19 +20,37 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     private readonly _onDidChangeDecorations = new vscode.EventEmitter<vscode.Uri | vscode.Uri[]>();
     readonly onDidChangeFileDecorations: vscode.Event<vscode.Uri | vscode.Uri[]> = this._onDidChangeDecorations.event;
 
-    constructor() {
+    private left: vscode.Uri;
+    private right: vscode.Uri;
+
+    constructor(left: vscode.Uri, right: vscode.Uri) {
+        this.left = left;
+        this.right = right;
+
         this._disposables.push(vscode.window.registerFileDecorationProvider(this));
         console.log("EntryStateDecorationProvider constructed");
     }
 
-    getState(uri: vscode.Uri): State {
-        if (uri.path.endsWith(".txt")) {
-            return State.Modified;
-        } else if(uri.path.endsWith(".md")) {
+    async _getState(uri: vscode.Uri): Promise<State> {
+        let left_path = this.left.path.substring(1) + uri.path;
+        let right_path = this.right.path.substring(1) + uri.path;
+
+        let left_path_exists = await utilities.exists(left_path);
+        let right_path_exists = await utilities.exists(right_path);
+
+        if(!left_path_exists && right_path_exists) {
             return State.Added;
+        } else if (left_path_exists && !right_path_exists) {
+            return State.Removed;
+        } else if (left_path_exists && right_path_exists && Buffer.compare(fs.readFileSync(left_path), fs.readFileSync(right_path))) {
+            return State.Modified;
         } else {
             return State.Null;
         }
+    }
+
+    private getState(uri: vscode.Uri): State | Thenable<State> {
+        return this._getState(uri);
     }
 
     async updateFileDecoration(uri: vscode.Uri): Promise<void> {
@@ -38,12 +58,12 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
         this._onDidChangeDecorations.fire([uri]);
     }
 
-    provideFileDecoration(uri: vscode.Uri): vscode.ProviderResult<vscode.FileDecoration> {
+    async provideFileDecoration(uri: vscode.Uri)/*: vscode.ProviderResult<vscode.FileDecoration>*/ {
         if (uri.scheme != "file-comparator") {
             return null;
         }
 
-        switch (this.getState(uri)) {
+        switch (await this.getState(uri)) {
             case State.Null: {
                 break;
             }

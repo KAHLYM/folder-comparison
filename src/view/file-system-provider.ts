@@ -111,7 +111,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     getTreeItem(element: FileTreeItem): TreeItem {
         if (element.resourceUri) {
-            const treeItem = new TreeItem(element.resourceUri, element.filetype === FileType.Directory ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None);
+            const treeItem = new TreeItem(element.resourceUri, element.filetype === FileType.Directory ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.None);
             if (element.filetype === FileType.File) {
                 treeItem.contextValue = 'file';
             }
