@@ -30,12 +30,6 @@ function massageError(error: Error & { code?: string }): Error {
     return error;
 }
 
-export function checkCancellation(token: vscode.CancellationToken): void {
-    if (token.isCancellationRequested) {
-        throw new Error('Operation cancelled');
-    }
-}
-
 export function normalizeNFC(items: string): string;
 export function normalizeNFC(items: string[]): string[];
 export function normalizeNFC(items: string | string[]): string | string[] {
@@ -77,18 +71,6 @@ export function writefile(path: string, content: Buffer): Promise<void> {
 export function exists(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         fs.exists(path, exists => handleResult(resolve, reject, null, exists));
-    });
-}
-
-export function rename(oldPath: string, newPath: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        fs.rename(oldPath, newPath, error => handleResult(resolve, reject, error, void 0));
-    });
-}
-
-export function unlink(path: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        fs.unlink(path, error => handleResult(resolve, reject, error, void 0));
     });
 }
 
