@@ -1,13 +1,15 @@
 import * as path from 'path';
 import * as utilities from '../utilities';
-import { TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
+import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
+import { writeFileSync } from 'fs';
+import { tmpdir } from 'os';
 
 enum Root {
     Left = 1,
     Right = 2,
 }
 
-class FileTreeItem extends TreeItem { 
+class FileTreeItem extends TreeItem {
     public filetype: FileType;
     public root: Root;
     public subpath: string;
@@ -25,9 +27,18 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     private left: Uri;
     private right: Uri;
 
+    private tmpFile: Uri;
+
     constructor(left: Uri, right: Uri) {
         this.left = left;
         this.right = right;
+
+        this.tmpFile = Uri.file(tmpdir() + "/folder-comparator");
+        this.makeTmpFile();
+    }
+
+    private makeTmpFile(): void {
+        return writeFileSync(this.tmpFile.path.substring(1), "");
     }
 
     private async _stat(path: string): Promise<FileStat> {
@@ -66,15 +77,15 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     cache[name] = new FileTreeItem(this.makeUri(namepath), type, Root.Left, namepath);
                 });
             }
-            
+
             if (element.root & Root.Right) {
                 const children = await this.readDirectory(path.join(this.right.fsPath, element.subpath));
                 children.map(([name, type]) => {
                     if (cache[name] != undefined) {
                         cache[name].root |= Root.Right;
                     } else {
-                    let namepath: string = path.join(element.subpath, name);
-                    cache[name] = new FileTreeItem(this.makeUri(namepath), type, Root.Right, namepath);
+                        let namepath: string = path.join(element.subpath, name);
+                        cache[name] = new FileTreeItem(this.makeUri(namepath), type, Root.Right, namepath);
                     }
                 });
             }
@@ -98,7 +109,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             }
         }
 
-        entries = Object.values(cache); 
+        entries = Object.values(cache);
         entries.sort((a, b) => {
             if (a.filetype === b.filetype && a.resourceUri && b.resourceUri) {
                 return a.resourceUri.path.localeCompare(b.resourceUri.path);
@@ -110,15 +121,38 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     getTreeItem(element: FileTreeItem): TreeItem {
-        if (element.resourceUri) {
-            const treeItem = new TreeItem(element.resourceUri, element.filetype === FileType.Directory ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.None);
-            if (element.filetype === FileType.File) {
+        const resourceUri: Uri = element && element.resourceUri ? element.resourceUri : Uri.parse("<unresolved-uri>");
+        switch (element.filetype) {
+            case FileType.File:
+                const treeItem = new TreeItem(resourceUri)
+                treeItem.command = this.getCommand(element);
                 treeItem.contextValue = 'file';
-            }
-            return treeItem;
+                return treeItem;
+            case FileType.Directory:
+                return new TreeItem(resourceUri, TreeItemCollapsibleState.Expanded);
+            default:
+                return new TreeItem(resourceUri);
         }
+    }
 
-        const treeItem = new TreeItem("<unresolved-uri>")
-        return treeItem;
+    private getLeftUri(element: FileTreeItem): Uri {
+        return Uri.file(this.left.path.substring(1) + "/" + element?.subpath.replaceAll("\\", "/"))
+    }
+
+    private getRightUri(element: FileTreeItem): Uri {
+        return Uri.file(this.right.path.substring(1) + "/" + element?.subpath.replaceAll("\\", "/"))
+    }
+
+    private getCommand(element: FileTreeItem): Command {
+        const title = element.subpath;
+        return {
+            command: 'vscode.diff',
+            title: 'Open',
+            arguments: [
+                element.root & Root.Left ? this.getLeftUri(element) : this.tmpFile,
+                element.root & Root.Right ? this.getRightUri(element) : this.tmpFile,
+                title
+            ]
+        };
     }
 }
