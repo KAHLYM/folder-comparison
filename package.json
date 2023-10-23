@@ -1,6 +1,6 @@
 {
-  "name": "folder-comparator",
-  "displayName": "Folder Comparator",
+  "name": "folder-comparison",
+  "displayName": "Folder Comparison",
   "description": "No description provided",
   "version": "0.0.1",
   "engines": {
@@ -14,7 +14,7 @@
   "contributes": {
     "colors": [
         {
-          "id": "foldercomparator.color.added",
+          "id": "foldercomparison.color.added",
           "description": "added",
           "defaults": {
             "light": "#587c0c",
@@ -24,7 +24,7 @@
           }
         },
         {
-          "id": "foldercomparator.color.modified",
+          "id": "foldercomparison.color.modified",
           "description": "modified",
           "defaults": {
             "light": "#895503",
@@ -34,7 +34,7 @@
           }
         },
         {
-          "id": "foldercomparator.color.deleted",
+          "id": "foldercomparison.color.deleted",
           "description": "deleted",
           "defaults": {
             "light": "#ad0707",
@@ -44,7 +44,7 @@
           }
         },
         {
-          "id": "foldercomparator.color.renamed",
+          "id": "foldercomparison.color.renamed",
           "description": "renamed",
           "defaults": {
             "light": "#007100",
@@ -54,7 +54,7 @@
           }
         },
         {
-          "id": "foldercomparator.color.untracked",
+          "id": "foldercomparison.color.untracked",
           "description": "untracked",
           "defaults": {
             "light": "#007100",
@@ -64,7 +64,7 @@
           }
         },
         {
-          "id": "foldercomparator.color.ignored",
+          "id": "foldercomparison.color.ignored",
           "description": "ignored",
           "defaults": {
             "light": "#8E8E90",
@@ -76,37 +76,37 @@
     ],
     "commands": [
       {
-        "command": "folder-comparator.helloWorld",
+        "command": "folder-comparison.helloWorld",
         "title": "Hello World"
       },
       {
-        "command": "folder-comparator.selectForCompare",
+        "command": "folder-comparison.selectForCompare",
         "title": "Select for Compare"
       },
       {
-        "command": "folder-comparator.compareWithSelected",
+        "command": "folder-comparison.compareWithSelected",
         "title": "Compare with Selected Folder"
       }
     ],
     "menus": {
       "explorer/context": [{
-        "command": "folder-comparator.selectForCompare",
+        "command": "folder-comparison.selectForCompare",
         "group": "3_compare@3",
         "when": "explorerResourceIsFolder"
       },
       {
-        "command": "folder-comparator.compareWithSelected",
+        "command": "folder-comparison.compareWithSelected",
         "group": "3_compare@4",
-        "when": "explorerResourceIsFolder && folder-comparator.showCompareWithSelected"
+        "when": "explorerResourceIsFolder && folder-comparison.showCompareWithSelected"
       }]
     },
     "views": {
       "explorer": [
         {
-          "id": "folderComparator",
-          "name": "Folder Comparator",
-          "when": "folder-comparator.showView",
-          "contextualTitle": "Folder Comparator"
+          "id": "folderComparison",
+          "name": "Folder Comparison",
+          "when": "folder-comparison.showView",
+          "contextualTitle": "Folder Comparison"
         }
       ]
     }

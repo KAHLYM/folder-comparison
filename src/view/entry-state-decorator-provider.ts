@@ -59,7 +59,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     }
 
     async provideFileDecoration(uri: vscode.Uri)/*: vscode.ProviderResult<vscode.FileDecoration>*/ {
-        if (uri.scheme != "file-comparator") {
+        if (uri.scheme != "file-comparison") {
             return null;
         }
 
@@ -68,17 +68,17 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
                 break;
             }
             case State.Removed: {
-                let decoration: vscode.FileDecoration = new vscode.FileDecoration("D", "deleted", new vscode.ThemeColor("foldercomparator.color.deleted"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("D", "deleted", new vscode.ThemeColor("foldercomparison.color.deleted"));
                 decoration.propagate = true;
                 return decoration;
             }
             case State.Modified: {
-                let decoration: vscode.FileDecoration =  new vscode.FileDecoration("M", "modified", new vscode.ThemeColor("foldercomparator.color.modified"));
+                let decoration: vscode.FileDecoration =  new vscode.FileDecoration("M", "modified", new vscode.ThemeColor("foldercomparison.color.modified"));
                 decoration.propagate = true;
                 return decoration;
             }
             case State.Added: {
-                let decoration: vscode.FileDecoration =  new vscode.FileDecoration("A", "added", new vscode.ThemeColor("foldercomparator.color.added"));
+                let decoration: vscode.FileDecoration =  new vscode.FileDecoration("A", "added", new vscode.ThemeColor("foldercomparison.color.added"));
                 decoration.propagate = true;
                 return decoration;
             }

@@ -33,7 +33,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         this.left = left;
         this.right = right;
 
-        this.tmpFile = Uri.file(tmpdir() + "/folder-comparator");
+        this.tmpFile = Uri.file(tmpdir() + "/folder-comparison");
         this.makeTmpFile();
     }
 
@@ -62,7 +62,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     makeUri(filepath: string): Uri {
-        return Uri.parse("file-comparator:///" + filepath.replaceAll("\\", "/"));
+        return Uri.parse("file-comparison:///" + filepath.replaceAll("\\", "/"));
     }
 
     async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
