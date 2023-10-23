@@ -81,22 +81,22 @@
       },
       {
         "command": "folder-comparator.selectForCompare",
-        "title": "Select Folder for Compare"
+        "title": "Select for Compare"
       },
       {
         "command": "folder-comparator.compareWithSelected",
-        "title": "Compare Folder with Selected"
+        "title": "Compare with Selected Folder"
       }
     ],
     "menus": {
       "explorer/context": [{
         "command": "folder-comparator.selectForCompare",
-        "group": "context@1",
+        "group": "3_compare@3",
         "when": "explorerResourceIsFolder"
       },
       {
         "command": "folder-comparator.compareWithSelected",
-        "group": "context@2",
+        "group": "3_compare@4",
         "when": "explorerResourceIsFolder && folder-comparator.showCompareWithSelected"
       }]
     },
