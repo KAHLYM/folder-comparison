@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fsp from './view/file-system-provider';
 import * as esdp from './view/entry-state-decorator-provider';
+import { execSync } from 'child_process';
 
 var path = require('path');
 
@@ -14,6 +15,17 @@ export class FileExplorer {
 
 export function activate(context: vscode.ExtensionContext) {
 
+	try {
+		execSync('git version');
+	} catch (err: any) {
+		if (!/\'git\' is not recognized as an internal or external command/.test(err.message || '')) {
+			throw err;
+		}
+
+		warnAboutMissingGit();
+		return;
+	}
+	
 	let compareFromPath: vscode.Uri;
 	let compareToPath: vscode.Uri;
 
@@ -39,6 +51,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(selectForCompare);
 	context.subscriptions.push(compareWithSelected);
+}
+
+async function warnAboutMissingGit(): Promise<void> {
+	const download = 'Download Git';
+	const choice = await vscode.window.showWarningMessage(
+		'Git not found. Please install Git.',
+		download
+	);
+
+	if (choice === download) {
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse('https://aka.ms/vscode-download-git'));
+	}
 }
 
 export function deactivate() { }
