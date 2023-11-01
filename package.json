@@ -1,7 +1,7 @@
 {
   "name": "folder-comparison",
   "displayName": "Folder Comparison",
-  "description": "No description provided",
+  "description": "Compare two folder using Git",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.82.0"
@@ -15,7 +15,7 @@
     "colors": [
         {
           "id": "foldercomparison.color.added",
-          "description": "added",
+          "description": "Color for added resources.",
           "defaults": {
             "light": "#587c0c",
             "dark": "#81b88b",
@@ -25,7 +25,7 @@
         },
         {
           "id": "foldercomparison.color.modified",
-          "description": "modified",
+          "description": "Color for modified resources.",
           "defaults": {
             "light": "#895503",
             "dark": "#E2C08D",
@@ -35,7 +35,7 @@
         },
         {
           "id": "foldercomparison.color.deleted",
-          "description": "deleted",
+          "description": "Color for deleted resources.",
           "defaults": {
             "light": "#ad0707",
             "dark": "#c74e39",
@@ -45,7 +45,7 @@
         },
         {
           "id": "foldercomparison.color.renamed",
-          "description": "renamed",
+          "description": "Color for renamed or copied resources.",
           "defaults": {
             "light": "#007100",
             "dark": "#73C991",
@@ -55,7 +55,7 @@
         },
         {
           "id": "foldercomparison.color.untracked",
-          "description": "untracked",
+          "description": "Color for untracked resources.",
           "defaults": {
             "light": "#007100",
             "dark": "#73C991",
@@ -65,7 +65,7 @@
         },
         {
           "id": "foldercomparison.color.ignored",
-          "description": "ignored",
+          "description": "Color for ignored resources.",
           "defaults": {
             "light": "#8E8E90",
             "dark": "#8C8C8C",
@@ -75,10 +75,6 @@
         }
     ],
     "commands": [
-      {
-        "command": "folder-comparison.helloWorld",
-        "title": "Hello World"
-      },
       {
         "command": "folder-comparison.selectForCompare",
         "title": "Select for Compare"
