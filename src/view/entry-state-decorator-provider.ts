@@ -12,13 +12,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     private readonly _onDidChangeDecorations = new vscode.EventEmitter<vscode.Uri | vscode.Uri[]>();
     readonly onDidChangeFileDecorations: vscode.Event<vscode.Uri | vscode.Uri[]> = this._onDidChangeDecorations.event;
 
-    private left: vscode.Uri;
-    private right: vscode.Uri;
-
-    constructor(left: vscode.Uri, right: vscode.Uri) {
-        this.left = left;
-        this.right = right;
-
+    constructor() {
         this._disposables.push(vscode.window.registerFileDecorationProvider(this));
     }
 
