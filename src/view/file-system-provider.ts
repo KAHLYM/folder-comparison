@@ -215,11 +215,14 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: Uri = Uri.parse("file-comparison:///" + (element ? (element.getUnixSubpath() + "?" + statusToString(element.status)) : "<unresolved-uri>"));
+        const resourceUri: Uri = Uri.parse("file-comparison:///" + element.getUnixSubpath() + "?" + statusToString(element.status));
         switch (element.filetype) {
             case FileType.File:
-                const treeItem = new TreeItem(resourceUri)
-                treeItem.command = this.getCommand(element);
+                const treeItem = new TreeItem(resourceUri);
+                let command: Command | void = this.getCommand(element);
+                if (command) {
+                    treeItem.command = command;
+                } 
                 treeItem.contextValue = 'file';
                 return treeItem;
             case FileType.Directory:
@@ -237,8 +240,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return Uri.file(this.right.path.substring(1) + "/" + element?.getUnixSubpath())
     }
 
-    private getCommand(element: FileTreeItem): Command {
-        switch(element.status) {
+    private getCommand(element: FileTreeItem): Command | void {
+        switch (element.status) {
             case Status.Addition:
                 return {
                     command: 'vscode.open',
@@ -271,14 +274,6 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     title: 'Open',
                     arguments: [
                         this.getRightUri(element),
-                    ]
-                };
-            case Status.Null:
-                return {
-                    command: 'vscode.open',
-                    title: 'Open',
-                    arguments: [
-                        this.getLeftUri(element), // unresolved uri
                     ]
                 };
         }
