@@ -1,9 +1,9 @@
 import * as path from 'path';
-import * as utilities from '../utilities';
+import * as utilities from './utilities';
 import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
 import { writeFileSync } from 'fs';
 import { tmpdir } from 'os';
-import { diff, NameStatus, Status, statusToString } from '../git';
+import { diff, NameStatus, Status, statusToString } from './git';
 
 class FileTreeItem extends TreeItem {
     public left: Uri;

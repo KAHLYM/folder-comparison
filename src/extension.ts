@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import * as fsp from './view/file-system-provider';
-import * as esdp from './view/entry-state-decorator-provider';
+import * as fsp from './file-system-provider';
+import * as esdp from './entry-state-decorator-provider';
 import { execSync } from 'child_process';
 
 var path = require('path');

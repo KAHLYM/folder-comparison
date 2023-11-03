@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Status, stringToStatus } from '../git';
+import { Status, stringToStatus } from './git';
 
 export function createNode(identifier: string): vscode.Uri {
     return vscode.Uri.parse(`Node:${identifier}`);
