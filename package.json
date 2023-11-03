@@ -2,13 +2,14 @@
   "name": "folder-comparison",
   "displayName": "Folder Comparison",
   "description": "Compare two folder using Git",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.82.0"
   },
   "categories": [
     "Other"
   ],
+  "publisher": "KAHLYM",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
