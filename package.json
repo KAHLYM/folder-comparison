@@ -13,6 +13,7 @@
     "color": "#232323",
     "theme": "dark"
   },
+  "homepage": "https://github.com/KAHLYM/folder-comparison/blob/main/README.md",
   "icon": "resources/icons/icon_light.png",
   "keywords": [
     "compare",
@@ -26,7 +27,7 @@
   "qna": false,
   "repository": {
 		"type": "git",
-		"url": "https://github.com/KAHLYM/folder-comparison"
+		"url": "https://github.com/KAHLYM/folder-comparison.git"
 	},
   "activationEvents": [],
   "main": "./out/extension.js",
