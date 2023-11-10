@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { FileSystemTrie } from './trie';
 
 export enum Status {
     Addition,
@@ -55,40 +56,46 @@ export interface NameStatus {
     right: string;
 }
 
-export function diff(left: string, right: string): NameStatus[] {
+export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
         stdout = execSync(`git diff ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")} --name-status`, { timeout: 1000 });
     } catch (err: any){
         stdout = err.stdout;
     }
-    return parse(stdout.toString());
+    return parse(stdout.toString(), left.replaceAll('\\', '/') + '/', right.replaceAll('\\', '/') + '/');
 }
 
 const name_status_regex: RegExp = /(?<status>[A-Z])(?<score>[0-9]*)\s+(?<left>[^\s]+)\s*(?<right>[^\s]*)/;
-function parse(output: string): NameStatus[] {
-    let name_statuses: NameStatus[] = [];
+function parse(output: string, leftHi: string, rightHi: string): FileSystemTrie {
+    let trie: FileSystemTrie = new FileSystemTrie();
 
     for (const line of output.split("\n")) {
         const [_group, status, score, left, right] = name_status_regex.exec(line) || ["", "", "", "", ""];
 
+        const leftSubpath: string = left.replace(rightHi, "").replace(leftHi, "");
+        const rightSubpath: string = right.replace(rightHi, "");
+
+        const intermediate: NameStatus = { status: Status.Null, score: 0, left: "", right: "" };
         switch (status) {
             case 'A':
-                name_statuses.push({ status: Status.Addition, score: 0, left: "", right: left });
+                trie.add(leftSubpath, { status: Status.Addition, score: 0, left: "", right: left }, intermediate);
                 break;
             case 'D':
-                name_statuses.push({ status: Status.Deletion, score: 0, left: left, right: right });
+                trie.add(leftSubpath, { status: Status.Deletion, score: 0, left: left, right: right }, intermediate);
                 break;
             case 'M':
-                name_statuses.push({ status: Status.Modification, score: 0, left: left, right: right });
+                trie.add(leftSubpath, { status: Status.Modification, score: 0, left: left, right: right }, intermediate);
                 break;
             case 'R':
-                name_statuses.push({ status: Status.Rename, score: parseInt(score), left: left, right: right });
+                const nameStatus: NameStatus = { status: Status.Rename, score: parseInt(score), left: left, right: right };
+                trie.add(leftSubpath, nameStatus, intermediate);
+                trie.add(rightSubpath, nameStatus, intermediate);
                 break;
             default:
                 continue;
         }
     }
 
-    return name_statuses;
+    return trie;
 }
