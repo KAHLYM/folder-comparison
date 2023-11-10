@@ -199,7 +199,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 treeItem.contextValue = 'file';
                 return treeItem;
             case FileType.Directory:
-                return new TreeItem(resourceUri, TreeItemCollapsibleState.Collapsed);
+                return new TreeItem(resourceUri, this.cache.exists(element.getUnixSubpath()) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
             default:
                 return new TreeItem(resourceUri);
         }
