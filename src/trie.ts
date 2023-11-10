@@ -14,17 +14,17 @@ export class FileSystemTrie {
 
     constructor() { }
 
-    private splitPath(path: string): string[] {
-        return path.split('/');
+    protected splitPath(path: string): string[] {
+        return path ? path.split('/') : [];
     }
 
-    add(path: string, content: any): void {
+    public add(path: string, content: any, intermediate: any): void {
         let node = this.root;
 
         const keys: string[] = this.splitPath(path)
         for (const key of keys) {
             if (node.children[key] == null) {
-                node.children[key] = new FileSystemTrieNode(key, null);
+                node.children[key] = new FileSystemTrieNode(key, intermediate);
             }
 
             node = node.children[key];
@@ -33,7 +33,7 @@ export class FileSystemTrie {
         node.content = content;
     }
 
-    exists(path: string): boolean {
+    public exists(path: string): boolean {
         let node = this.root;
 
         const keys: string[] = this.splitPath(path);
@@ -48,7 +48,7 @@ export class FileSystemTrie {
         return true;
     }
 
-    get(path: string): any {
+    public getContent(path: string): any {
         let node = this.root;
 
         const keys: string[] = this.splitPath(path);
@@ -57,5 +57,16 @@ export class FileSystemTrie {
         }
 
         return node.content;
+    }
+
+    public getChildren(path: string): FileSystemTrieNode[] {
+        let node = this.root;
+
+        const keys: string[] = this.splitPath(path);
+        for (const key of keys) {
+            node = node.children[key];
+        }
+
+        return Object.values(node.children);
     }
 }

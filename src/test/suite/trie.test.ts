@@ -5,6 +5,18 @@ class MockFileSystemTrie extends FileSystemTrie {
     public getRoot(): FileSystemTrieNode {
         return super.root;
     }
+
+    public splitPath(path: string): string[] {
+        return super.splitPath(path);
+    }
+}
+
+function getMockFileSystemTrieExampleOne(): MockFileSystemTrie {
+    let trie: MockFileSystemTrie = new MockFileSystemTrie();
+    trie.add("foo/bar.txt", "a", { });
+    trie.add("foo/bar.md", "b", { });
+    trie.add("baz.txt", "c", { });
+    return trie;
 }
 
 suite('trie', () => {
@@ -14,10 +26,10 @@ suite('trie', () => {
 
         const key: string = "foo";
         const value: any = null;
-        trie.add(key, value);
+        trie.add(key, value, { });
 
         assert.equal(true, trie.exists(key));
-        assert.equal(value, trie.get(key));
+        assert.equal(value, trie.getContent(key));
     });
 
     test('handles single file', () => {
@@ -25,10 +37,10 @@ suite('trie', () => {
 
         const key: string = "foo.txt";
         const value: any = null;
-        trie.add(key, value);
+        trie.add(key, value, { });
 
         assert.equal(true, trie.exists(key));
-        assert.equal(value, trie.get(key));
+        assert.equal(value, trie.getContent(key));
     });
 
     test('handles compound directory', () => {
@@ -36,13 +48,13 @@ suite('trie', () => {
 
         const key: string = "foo/bar";
         const value: any = "oof";
-        trie.add(key, value);
+        trie.add(key, value, { });
 
         assert.equal(true, trie.exists('foo'));
-        assert.equal(null, trie.get('foo'));
+        assert.deepEqual({ }, trie.getContent('foo'));
 
         assert.equal(true, trie.exists(key));
-        assert.equal(value, trie.get(key));
+        assert.equal(value, trie.getContent(key));
     });
 
     test('handles compound file', () => {
@@ -50,13 +62,13 @@ suite('trie', () => {
 
         const key: string = "foo/bar.txt";
         const value: any = "oof";
-        trie.add(key, value);
+        trie.add(key, value, { });
 
         assert.equal(true, trie.exists('foo'));
-        assert.equal(null, trie.get('foo'));
+        assert.deepEqual({ }, trie.getContent('foo'));
 
         assert.equal(true, trie.exists(key));
-        assert.equal(value, trie.get(key));
+        assert.equal(value, trie.getContent(key));
     });
 
     test('handles mulitple filenames with different extensions', () => {
@@ -64,17 +76,17 @@ suite('trie', () => {
 
         const txtKey: string = "foo/bar.txt";
         const txtValue: any = "txtValue";
-        trie.add(txtKey, txtValue);
+        trie.add(txtKey, txtValue, { });
 
         const mdKey: string = "foo/bar.md";
         const mdValue: any = "mdValue";
-        trie.add(mdKey, mdValue);
+        trie.add(mdKey, mdValue, { });
 
         assert.equal(true, trie.exists(txtKey));
-        assert.equal(txtValue, trie.get(txtKey));
+        assert.equal(txtValue, trie.getContent(txtKey));
 
         assert.equal(true, trie.exists(mdKey));
-        assert.equal(mdValue, trie.get(mdKey));
+        assert.equal(mdValue, trie.getContent(mdKey));
     });
 
     test('handles mulitple filenames in different directories', () => {
@@ -82,17 +94,17 @@ suite('trie', () => {
 
         const fooKey: string = "foo/baz.txt";
         const fooValue: any = "fooValue";
-        trie.add(fooKey, fooValue);
+        trie.add(fooKey, fooValue, { });
 
         const barKey: string = "bar/baz.txt";
         const barValue: any = "barValue";
-        trie.add(barKey, barValue);
+        trie.add(barKey, barValue, { });
 
         assert.equal(true, trie.exists(fooKey));
-        assert.equal(fooValue, trie.get(fooKey));
+        assert.equal(fooValue, trie.getContent(fooKey));
 
         assert.equal(true, trie.exists(barKey));
-        assert.equal(barValue, trie.get(barKey));
+        assert.equal(barValue, trie.getContent(barKey));
     });
 
     suite('constructor', () => {
@@ -110,6 +122,21 @@ suite('trie', () => {
         });
     })
 
+    suite('splitPath function', () => {
+
+        test('returns empty array when passed empty string', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+
+            assert.deepEqual([], trie.splitPath(""));
+        });
+
+        test('handles compound directory', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+
+            assert.deepEqual(["foo", "bar", "baz"], trie.splitPath("foo/bar/baz"));
+        });
+    });
+
     suite('add function', () => {
 
     });
@@ -118,7 +145,7 @@ suite('trie', () => {
 
         let trie: MockFileSystemTrie = new MockFileSystemTrie();
         const path: string = "foo/bar/baz.txt";
-        trie.add(path, null);
+        trie.add(path, null, { });
         [
             { exists: false, path: "" },
             { exists: true, path: "foo" },
@@ -132,12 +159,48 @@ suite('trie', () => {
         });
     });
 
-    suite('get function', () => {
+    suite('getContent function', () => {
 
-        test.skip('returns root node when passed empty path', () => {
+        test('does not throw when passed empty path', () => {
             let trie: MockFileSystemTrie = new MockFileSystemTrie();
 
-            assert.equal(trie.getRoot(), trie.get(""));
+            assert.doesNotThrow(() => {
+                trie.getContent("");
+            });
+        });
+
+        test('throws when passed invalid path', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+
+            assert.throws(() => {
+                trie.getContent("foo");
+            });
+        });
+    });
+
+    suite('getChildren function', () => {
+
+        test('does not throw when passed empty path', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+
+            assert.doesNotThrow(() => {
+                trie.getChildren("");
+            });
+        });
+
+        test('throws when passed invalid path', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+
+            assert.throws(() => {
+                trie.getChildren("foo");
+            });
+        });
+
+        test('handles MockFileSystemTrieExampleOne', () => {
+            let trie: MockFileSystemTrie = getMockFileSystemTrieExampleOne();
+
+            assert.equal(2, trie.getChildren("").length);
+            assert.equal(2, trie.getChildren("foo").length);
         });
     });
 });
