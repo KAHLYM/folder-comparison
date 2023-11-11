@@ -4,6 +4,13 @@ import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemC
 import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
+function toUnix(filepath: string): string {
+    return filepath.split(path.sep).join(path.posix.sep);
+}
+
+function makeUri(filepath: string, status: Status): Uri {
+    return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + statusToString(status));
+}
 class FileTreeItem extends TreeItem {
     public left: Uri;
     public right: Uri;
@@ -15,7 +22,7 @@ class FileTreeItem extends TreeItem {
         super(path);
         this.left = left;
         this.right = right;
-        this.subpath = Uri.parse("file-comparison:///" + path.replaceAll("\\", "/") + "?" + statusToString(status));
+        this.subpath = makeUri(path, status);
         this.filetype = filetype;
         this.status = status;
     }
@@ -35,10 +42,6 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         this.left = left;
         this.right = right;
         this.cache = diff(this.left.fsPath, this.right.fsPath);
-    }
-
-    private toUnix(filepath: string): string {
-        return filepath.replaceAll("\\", "/");
     }
 
     private async _stat(path: string): Promise<FileStat> {
@@ -75,7 +78,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         if (!element) { // getChildren called against root directory
             const children = await this.readDirectory(this.left.fsPath);
             children.map(([name, type]) => {
-                childCache[this.toUnix(name)] = new FileTreeItem(
+                childCache[toUnix(name)] = new FileTreeItem(
                     Uri.parse(path.join(this.left.fsPath, name)),
                     Uri.parse(""),
                     name,
@@ -89,10 +92,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 const children = await this.readDirectory(subdirectory);
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.getUnixSubpath(), name);
-                    childCache[this.toUnix(namepath)] = new FileTreeItem(
-                        Uri.parse(path.join(this.left.fsPath, this.toUnix(namepath))),
+                    childCache[toUnix(namepath)] = new FileTreeItem(
+                        Uri.parse(path.join(this.left.fsPath, toUnix(namepath))),
                         Uri.parse(""),
-                        this.toUnix(namepath),
+                        toUnix(namepath),
                         type,
                         Status.Null);
                 });
@@ -166,7 +169,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: Uri = Uri.parse("file-comparison:///" + element.getUnixSubpath() + "?" + statusToString(element.status));
+        const resourceUri: Uri = makeUri(element.getUnixSubpath(), element.status);
         switch (element.filetype) {
             case FileType.File:
                 const treeItem = new TreeItem(resourceUri);
