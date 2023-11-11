@@ -3,14 +3,13 @@ import * as utilities from './utilities';
 import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
 import { writeFileSync } from 'fs';
 import { tmpdir } from 'os';
-import { diff, NameStatus, Status, statusToString } from './git';
+import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
 class FileTreeItem extends TreeItem {
     public left: Uri;
     public right: Uri;
     private subpath: Uri;
-    public rightSubpath: Uri;
     public filetype: FileType;
     public status: Status;
 
@@ -19,21 +18,12 @@ class FileTreeItem extends TreeItem {
         this.left = left;
         this.right = right;
         this.subpath = Uri.parse("file-comparison:///" + path.replaceAll("\\", "/") + "?" + statusToString(status));
-        this.rightSubpath = Uri.parse("");
         this.filetype = filetype;
         this.status = status;
     }
 
     public getUnixSubpath(): string {
         return this.subpath.path.substring(1).replaceAll("\\", "/");
-    }
-
-    public setRightSubpath(subpath: string): void {
-        this.rightSubpath = Uri.parse("file-comparison:///" + subpath.replaceAll("\\", "/") + "?" + statusToString(this.status));
-    }
-
-    public getRightUnixSubpath(): string {
-        return this.rightSubpath.path.substring(1).replaceAll("\\", "/");
     }
 }
 
