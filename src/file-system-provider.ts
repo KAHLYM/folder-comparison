@@ -11,10 +11,11 @@ function toUnix(filepath: string): string {
 function makeUri(filepath: string, status: Status): Uri {
     return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + statusToString(status));
 }
+
 class FileTreeItem extends TreeItem {
     public left: Uri;
     public right: Uri;
-    private subpath: Uri;
+    private _subpath: Uri;
     public filetype: FileType;
     public status: Status;
 
@@ -22,13 +23,13 @@ class FileTreeItem extends TreeItem {
         super(path);
         this.left = left;
         this.right = right;
-        this.subpath = makeUri(path, status);
+        this._subpath = makeUri(path, status);
         this.filetype = filetype;
         this.status = status;
     }
 
-    public getUnixSubpath(): string {
-        return this.subpath.path.substring(1).replaceAll("\\", "/");
+    get subpath(): string {
+        return toUnix(this._subpath.path).substring(1);
     }
 }
 
@@ -86,12 +87,12 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     Status.Null);
             });
         } else { // getChildren called against subdirectory
-            const subdirectory = path.join(this.left.fsPath, element.getUnixSubpath());
+            const subdirectory = path.join(this.left.fsPath, element.subpath);
             const exists = await this.exists(subdirectory);
             if (exists) {
                 const children = await this.readDirectory(subdirectory);
                 children.map(([name, type]) => {
-                    let namepath: string = path.join(element.getUnixSubpath(), name);
+                    let namepath: string = path.join(element.subpath, name);
                     childCache[toUnix(namepath)] = new FileTreeItem(
                         Uri.parse(path.join(this.left.fsPath, toUnix(namepath))),
                         Uri.parse(""),
@@ -103,7 +104,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         }
 
         // Get elements from cache
-        const directory: string = element ? element.getUnixSubpath() : "";
+        const directory: string = element ? element.subpath : "";
         const items: FileSystemTrieNode[] = this.cache.exists(directory) ? this.cache.getChildren(directory) : [];
         for (const item of items) {
             if (item.key && item.content) {
@@ -159,8 +160,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         // Sort children by filetype and alphanumerically
         let children: FileTreeItem[] = Object.values(childCache);
         children.sort((a, b) => {
-            if (a.filetype === b.filetype && a.getUnixSubpath() && b.getUnixSubpath()) {
-                return a.getUnixSubpath().localeCompare(b.getUnixSubpath());
+            if (a.filetype === b.filetype && a.subpath && b.subpath) {
+                return a.subpath.localeCompare(b.subpath);
             }
             return a.filetype === FileType.Directory ? -1 : 1;
         });
@@ -169,7 +170,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: Uri = makeUri(element.getUnixSubpath(), element.status);
+        const resourceUri: Uri = makeUri(element.subpath, element.status);
         switch (element.filetype) {
             case FileType.File:
                 const treeItem = new TreeItem(resourceUri);
@@ -180,18 +181,18 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 treeItem.contextValue = 'file';
                 return treeItem;
             case FileType.Directory:
-                return new TreeItem(resourceUri, this.cache.exists(element.getUnixSubpath()) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
+                return new TreeItem(resourceUri, this.cache.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
             default:
                 return new TreeItem(resourceUri);
         }
     }
 
     private getLeftUri(element: FileTreeItem): Uri {
-        return Uri.file(this.left.path.substring(1) + "/" + element?.getUnixSubpath());
+        return Uri.file(this.left.path.substring(1) + "/" + element?.subpath);
     }
 
     private getRightUri(element: FileTreeItem): Uri {
-        return Uri.file(this.right.path.substring(1) + "/" + element?.getUnixSubpath())
+        return Uri.file(this.right.path.substring(1) + "/" + element?.subpath)
     }
 
     private getCommand(element: FileTreeItem): Command | void {
@@ -219,7 +220,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     arguments: [
                         this.getLeftUri(element),
                         this.getRightUri(element),
-                        element.getUnixSubpath() + " (Modified)"
+                        element.subpath + " (Modified)"
                     ]
                 };
             case Status.Rename:
