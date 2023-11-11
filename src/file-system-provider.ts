@@ -1,8 +1,6 @@
 import * as path from 'path';
 import * as utilities from './utilities';
 import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
-import { writeFileSync } from 'fs';
-import { tmpdir } from 'os';
 import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
@@ -31,26 +29,16 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     private left: Uri;
     private right: Uri;
-
     private cache: FileSystemTrie;
 
     constructor(left: Uri, right: Uri) {
         this.left = left;
         this.right = right;
-
         this.cache = diff(this.left.fsPath, this.right.fsPath);
-
-        this.tmpFile = Uri.file(tmpdir() + "/folder-comparison");
-        this.makeTmpFile();
     }
 
     private toUnix(filepath: string): string {
         return filepath.replaceAll("\\", "/");
-    }
-
-    private tmpFile: Uri;
-    private makeTmpFile(): void {
-        return writeFileSync(this.tmpFile.path.substring(1), "");
     }
 
     private async _stat(path: string): Promise<FileStat> {
