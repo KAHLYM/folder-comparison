@@ -112,9 +112,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.getUnixSubpath(), name);
                     childCache[this.toUnix(namepath)] = new FileTreeItem(
-                        Uri.parse(path.join(this.left.fsPath, namepath)),
+                        Uri.parse(path.join(this.left.fsPath, this.toUnix(namepath))),
                         Uri.parse(""),
-                        namepath,
+                        this.toUnix(namepath),
                         type,
                         Status.Null);
                 });
@@ -134,8 +134,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         childCache[item.key] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
-                            item.key,
-                            item.content.filetype,
+                            directory == "" ? item.key : directory + "/" + item.key,
+                            FileType.File,
                             item.content.status
                         );
                         break;
@@ -153,7 +153,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                                 item.content.left,
                                 item.content.right,
                                 rightSubpath,
-                                item.content.filetype,
+                                FileType.File,
                                 item.content.status
                             );
                         }
@@ -247,6 +247,14 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     title: 'Open',
                     arguments: [
                         this.getRightUri(element),
+                    ]
+                };
+            case Status.Null:
+                return {
+                    command: 'vscode.open',
+                    title: 'Open',
+                    arguments: [
+                        this.getLeftUri(element),
                     ]
                 };
         }
