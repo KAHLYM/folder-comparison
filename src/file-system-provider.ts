@@ -130,7 +130,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         childCache[item.key] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
-                            directory == "" ? item.key : directory + "/" + item.key,
+                            directory == "" ? item.key : directory + path.posix.sep + item.key,
                             FileType.File,
                             item.content.status
                         );
@@ -159,7 +159,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             childCache[item.key] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
-                                directory == "" ? item.key : directory + "/" + item.key,
+                                directory == "" ? item.key : directory + path.posix.sep + item.key,
                                 FileType.Directory,
                                 item.content.status
                             );
@@ -202,11 +202,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     private getLeftUri(element: FileTreeItem): Uri {
-        return Uri.file(this.left.path.substring(1) + "/" + element?.subpath);
+        return Uri.file(this.left.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
     private getRightUri(element: FileTreeItem): Uri {
-        return Uri.file(this.right.path.substring(1) + "/" + element?.subpath)
+        return Uri.file(this.right.path.substring(1) + path.posix.sep + element?.subpath)
     }
 
     private getCommand(element: FileTreeItem): Command | void {
