@@ -1,16 +1,21 @@
 import * as path from 'path';
 import * as utilities from './utilities';
 import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
-import { writeFileSync } from 'fs';
-import { tmpdir } from 'os';
-import { diff, NameStatus, Status, statusToString } from './git';
+import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
+
+function toUnix(filepath: string): string {
+    return filepath.split(path.sep).join(path.posix.sep);
+}
+
+function makeUri(filepath: string, status: Status): Uri {
+    return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + statusToString(status));
+}
 
 class FileTreeItem extends TreeItem {
     public left: Uri;
     public right: Uri;
-    private subpath: Uri;
-    public rightSubpath: Uri;
+    private _subpath: Uri;
     public filetype: FileType;
     public status: Status;
 
@@ -18,22 +23,13 @@ class FileTreeItem extends TreeItem {
         super(path);
         this.left = left;
         this.right = right;
-        this.subpath = Uri.parse("file-comparison:///" + path.replaceAll("\\", "/") + "?" + statusToString(status));
-        this.rightSubpath = Uri.parse("");
+        this._subpath = makeUri(path, status);
         this.filetype = filetype;
         this.status = status;
     }
 
-    public getUnixSubpath(): string {
-        return this.subpath.path.substring(1).replaceAll("\\", "/");
-    }
-
-    public setRightSubpath(subpath: string): void {
-        this.rightSubpath = Uri.parse("file-comparison:///" + subpath.replaceAll("\\", "/") + "?" + statusToString(this.status));
-    }
-
-    public getRightUnixSubpath(): string {
-        return this.rightSubpath.path.substring(1).replaceAll("\\", "/");
+    get subpath(): string {
+        return toUnix(this._subpath.path).substring(1);
     }
 }
 
@@ -41,26 +37,12 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     private left: Uri;
     private right: Uri;
-
     private cache: FileSystemTrie;
 
     constructor(left: Uri, right: Uri) {
         this.left = left;
         this.right = right;
-
         this.cache = diff(this.left.fsPath, this.right.fsPath);
-
-        this.tmpFile = Uri.file(tmpdir() + "/folder-comparison");
-        this.makeTmpFile();
-    }
-
-    private toUnix(filepath: string): string {
-        return filepath.replaceAll("\\", "/");
-    }
-
-    private tmpFile: Uri;
-    private makeTmpFile(): void {
-        return writeFileSync(this.tmpFile.path.substring(1), "");
     }
 
     private async _stat(path: string): Promise<FileStat> {
@@ -91,13 +73,27 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return Promise.resolve(result);
     }
 
+    private removePrefix(path: string, left: boolean, right: boolean): string {
+        path = toUnix(path);
+
+        if (right) {
+            path = path.replace(toUnix(this.right.fsPath), "")
+        }
+
+        if (left) {
+            path = path.replace(toUnix(this.left.fsPath), "")
+        }
+
+        return path.substring(1);
+    }
+
     async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
         if (!element) { // getChildren called against root directory
             const children = await this.readDirectory(this.left.fsPath);
             children.map(([name, type]) => {
-                childCache[this.toUnix(name)] = new FileTreeItem(
+                childCache[toUnix(name)] = new FileTreeItem(
                     Uri.parse(path.join(this.left.fsPath, name)),
                     Uri.parse(""),
                     name,
@@ -105,16 +101,16 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     Status.Null);
             });
         } else { // getChildren called against subdirectory
-            const subdirectory = path.join(this.left.fsPath, element.getUnixSubpath());
+            const subdirectory = path.join(this.left.fsPath, element.subpath);
             const exists = await this.exists(subdirectory);
             if (exists) {
                 const children = await this.readDirectory(subdirectory);
                 children.map(([name, type]) => {
-                    let namepath: string = path.join(element.getUnixSubpath(), name);
-                    childCache[this.toUnix(namepath)] = new FileTreeItem(
-                        Uri.parse(path.join(this.left.fsPath, this.toUnix(namepath))),
+                    let namepath: string = path.join(element.subpath, name);
+                    childCache[toUnix(namepath)] = new FileTreeItem(
+                        Uri.parse(path.join(this.left.fsPath, toUnix(namepath))),
                         Uri.parse(""),
-                        this.toUnix(namepath),
+                        toUnix(namepath),
                         type,
                         Status.Null);
                 });
@@ -122,19 +118,19 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         }
 
         // Get elements from cache
-        const directory: string = element ? element.getUnixSubpath() : "";
+        const directory: string = element ? element.subpath : "";
         const items: FileSystemTrieNode[] = this.cache.exists(directory) ? this.cache.getChildren(directory) : [];
         for (const item of items) {
             if (item.key && item.content) {
-                const leftSubpath: string = item.content.left.replace(this.right.fsPath.replaceAll("\\", "/"), "").replace(this.left.fsPath.replaceAll("\\", "/"), "").substring(1);
-                const rightSubpath: string = item.content.right.replace(this.right.fsPath.replaceAll("\\", "/"), "").substring(1);
+                const leftSubpath: string = this.removePrefix(item.content.left, true, true);
+                const rightSubpath: string = this.removePrefix(item.content.right, false, true);
 
                 switch (item.content.status) {
                     case Status.Addition:
                         childCache[item.key] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
-                            directory == "" ? item.key : directory + "/" + item.key,
+                            directory == "" ? item.key : directory + path.posix.sep + item.key,
                             FileType.File,
                             item.content.status
                         );
@@ -163,7 +159,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             childCache[item.key] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
-                                directory == "" ? item.key : directory + "/" + item.key,
+                                directory == "" ? item.key : directory + path.posix.sep + item.key,
                                 FileType.Directory,
                                 item.content.status
                             );
@@ -178,8 +174,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         // Sort children by filetype and alphanumerically
         let children: FileTreeItem[] = Object.values(childCache);
         children.sort((a, b) => {
-            if (a.filetype === b.filetype && a.getUnixSubpath() && b.getUnixSubpath()) {
-                return a.getUnixSubpath().localeCompare(b.getUnixSubpath());
+            if (a.filetype === b.filetype && a.subpath && b.subpath) {
+                return a.subpath.localeCompare(b.subpath);
             }
             return a.filetype === FileType.Directory ? -1 : 1;
         });
@@ -188,7 +184,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: Uri = Uri.parse("file-comparison:///" + element.getUnixSubpath() + "?" + statusToString(element.status));
+        const resourceUri: Uri = makeUri(element.subpath, element.status);
         switch (element.filetype) {
             case FileType.File:
                 const treeItem = new TreeItem(resourceUri);
@@ -199,64 +195,57 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 treeItem.contextValue = 'file';
                 return treeItem;
             case FileType.Directory:
-                return new TreeItem(resourceUri, this.cache.exists(element.getUnixSubpath()) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
+                return new TreeItem(resourceUri, this.cache.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
             default:
                 return new TreeItem(resourceUri);
         }
     }
 
     private getLeftUri(element: FileTreeItem): Uri {
-        return Uri.file(this.left.path.substring(1) + "/" + element?.getUnixSubpath());
+        return Uri.file(this.left.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
     private getRightUri(element: FileTreeItem): Uri {
-        return Uri.file(this.right.path.substring(1) + "/" + element?.getUnixSubpath())
+        return Uri.file(this.right.path.substring(1) + path.posix.sep + element?.subpath)
     }
 
     private getCommand(element: FileTreeItem): Command | void {
+        let args: any[] = [];
+
         switch (element.status) {
             case Status.Addition:
-                return {
-                    command: 'vscode.open',
-                    title: 'Open',
-                    arguments: [
-                        this.getRightUri(element),
-                    ]
-                };
+                args = [
+                    this.getRightUri(element)
+                ];
+                break;
             case Status.Deletion:
-                return {
-                    command: 'vscode.open',
-                    title: 'Open',
-                    arguments: [
-                        this.getLeftUri(element),
-                    ]
-                };
+                args = [
+                    this.getLeftUri(element)
+                ];
+                break;
             case Status.Modification:
-                return {
-                    command: 'vscode.diff',
-                    title: 'Open',
-                    arguments: [
-                        this.getLeftUri(element),
-                        this.getRightUri(element),
-                        element.getUnixSubpath() + " (Modified)"
-                    ]
-                };
+                args = [
+                    this.getLeftUri(element),
+                    this.getRightUri(element),
+                    element.subpath + " (Modified)"
+                ]
+                break;
             case Status.Rename:
-                return {
-                    command: 'vscode.open',
-                    title: 'Open',
-                    arguments: [
-                        this.getRightUri(element),
-                    ]
-                };
+                args = [
+                    this.getRightUri(element),
+                ]
+                break;
             case Status.Null:
-                return {
-                    command: 'vscode.open',
-                    title: 'Open',
-                    arguments: [
-                        this.getLeftUri(element),
-                    ]
-                };
+                args = [
+                    this.getLeftUri(element),
+                ]
+                break;
         }
+
+        return {
+            command: 'vscode.open',
+            title: 'Open',
+            arguments: args
+        };
     }
 }
