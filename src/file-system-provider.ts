@@ -203,24 +203,29 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 args = [
                     this.getRightUri(element)
                 ];
+                break;
             case Status.Deletion:
                 args = [
                     this.getLeftUri(element)
                 ];
+                break;
             case Status.Modification:
                 args = [
                     this.getLeftUri(element),
                     this.getRightUri(element),
                     element.subpath + " (Modified)"
                 ]
+                break;
             case Status.Rename:
                 args = [
                     this.getRightUri(element),
                 ]
+                break;
             case Status.Null:
                 args = [
                     this.getLeftUri(element),
                 ]
+                break;
         }
 
         return {
