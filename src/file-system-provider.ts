@@ -73,6 +73,20 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return Promise.resolve(result);
     }
 
+    private removePrefix(path: string, left: boolean, right: boolean): string {
+        path = toUnix(path);
+
+        if (right) {
+            path = path.replace(toUnix(this.right.fsPath), "")
+        }
+
+        if (left) {
+            path = path.replace(toUnix(this.left.fsPath), "")
+        }
+
+        return path.substring(1);
+    }
+
     async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
@@ -108,8 +122,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         const items: FileSystemTrieNode[] = this.cache.exists(directory) ? this.cache.getChildren(directory) : [];
         for (const item of items) {
             if (item.key && item.content) {
-                const leftSubpath: string = item.content.left.replace(this.right.fsPath.replaceAll("\\", "/"), "").replace(this.left.fsPath.replaceAll("\\", "/"), "").substring(1);
-                const rightSubpath: string = item.content.right.replace(this.right.fsPath.replaceAll("\\", "/"), "").substring(1);
+                const leftSubpath: string = this.removePrefix(item.content.left, true, true);
+                const rightSubpath: string = this.removePrefix(item.content.right, false, true);
 
                 switch (item.content.status) {
                     case Status.Addition:
