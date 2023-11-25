@@ -32,6 +32,19 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Folder Comparison",
+      "properties": {
+        "foldercomparison.commandArguments": {
+          "type": "array",
+          "default": [
+            "--name-status",
+            "--no-index"
+          ],
+          "markdownDescription": "Specifies arguments to pass to the `git diff` command"
+        }
+      }
+    },
     "colors": [
       {
         "id": "foldercomparison.color.added",
