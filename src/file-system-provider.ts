@@ -210,42 +210,49 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     private getCommand(element: FileTreeItem): Command | void {
-        let args: any[] = [];
-
         switch (element.status) {
             case Status.Addition:
-                args = [
-                    this.getRightUri(element)
-                ];
-                break;
+                return {
+                    command: 'vscode.open',
+                    title: 'Open',
+                    arguments: [
+                        this.getRightUri(element)
+                    ]
+                }
             case Status.Deletion:
-                args = [
-                    this.getLeftUri(element)
-                ];
-                break;
+                return {
+                    command: 'vscode.open',
+                    title: 'Open',
+                    arguments: [
+                        this.getLeftUri(element)
+                    ]
+                }
             case Status.Modification:
-                args = [
-                    this.getLeftUri(element),
-                    this.getRightUri(element),
-                    element.subpath + " (Modified)"
-                ]
-                break;
+                return {
+                    command: 'vscode.diff',
+                    title: 'Open',
+                    arguments: [
+                        this.getLeftUri(element),
+                        this.getRightUri(element),
+                        element.subpath + " (Modified)"
+                    ]
+                }
             case Status.Rename:
-                args = [
-                    this.getRightUri(element),
-                ]
-                break;
+                return {
+                    command: 'vscode.open',
+                    title: 'Open',
+                    arguments: [
+                        this.getRightUri(element),
+                    ]
+                }
             case Status.Null:
-                args = [
-                    this.getLeftUri(element),
-                ]
-                break;
+                return {
+                    command: 'vscode.open',
+                    title: 'Open',
+                    arguments: [
+                        this.getLeftUri(element),
+                    ]
+                }
         }
-
-        return {
-            command: 'vscode.open',
-            title: 'Open',
-            arguments: args
-        };
     }
 }
