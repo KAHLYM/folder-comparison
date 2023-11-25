@@ -59,7 +59,7 @@ export interface NameStatus {
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
-        stdout = execSync(`git diff ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")} --name-status`, { timeout: 1000 });
+        stdout = execSync(`git diff --name-status --no-index ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
     } catch (err: any){
         stdout = err.stdout;
     }
