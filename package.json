@@ -32,9 +32,22 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Folder Comparison",
+      "properties": {
+        "folderComparison.commandArguments": {
+          "type": "array",
+          "default": [
+            "--name-status",
+            "--no-index"
+          ],
+          "markdownDescription": "Specifies arguments to pass to the `git diff` command"
+        }
+      }
+    },
     "colors": [
       {
-        "id": "foldercomparison.color.added",
+        "id": "folderComparison.color.added",
         "description": "Color for added resources.",
         "defaults": {
           "light": "#587c0c",
@@ -44,7 +57,7 @@
         }
       },
       {
-        "id": "foldercomparison.color.modified",
+        "id": "folderComparison.color.modified",
         "description": "Color for modified resources.",
         "defaults": {
           "light": "#895503",
@@ -54,7 +67,7 @@
         }
       },
       {
-        "id": "foldercomparison.color.deleted",
+        "id": "folderComparison.color.deleted",
         "description": "Color for deleted resources.",
         "defaults": {
           "light": "#ad0707",
@@ -64,7 +77,7 @@
         }
       },
       {
-        "id": "foldercomparison.color.renamed",
+        "id": "folderComparison.color.renamed",
         "description": "Color for renamed or copied resources.",
         "defaults": {
           "light": "#007100",
@@ -74,7 +87,7 @@
         }
       },
       {
-        "id": "foldercomparison.color.untracked",
+        "id": "folderComparison.color.untracked",
         "description": "Color for untracked resources.",
         "defaults": {
           "light": "#007100",
@@ -84,7 +97,7 @@
         }
       },
       {
-        "id": "foldercomparison.color.ignored",
+        "id": "folderComparison.color.ignored",
         "description": "Color for ignored resources.",
         "defaults": {
           "light": "#8E8E90",
@@ -96,25 +109,25 @@
     ],
     "commands": [
       {
-        "command": "folder-comparison.selectForCompare",
+        "command": "folderComparison.selectForCompare",
         "title": "Select for Compare"
       },
       {
-        "command": "folder-comparison.compareWithSelected",
+        "command": "folderComparison.compareWithSelected",
         "title": "Compare with Selected Folder"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "command": "folder-comparison.selectForCompare",
+          "command": "folderComparison.selectForCompare",
           "group": "3_compare@3",
           "when": "explorerResourceIsFolder"
         },
         {
-          "command": "folder-comparison.compareWithSelected",
+          "command": "folderComparison.compareWithSelected",
           "group": "3_compare@4",
-          "when": "explorerResourceIsFolder && folder-comparison.showCompareWithSelected"
+          "when": "explorerResourceIsFolder && folderComparison.showCompareWithSelected"
         }
       ]
     },
@@ -123,7 +136,7 @@
         {
           "id": "folderComparison",
           "name": "Folder Comparison",
-          "when": "folder-comparison.showView",
+          "when": "folderComparison.showView",
           "contextualTitle": "Folder Comparison"
         }
       ]
