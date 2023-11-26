@@ -60,7 +60,7 @@ export interface NameStatus {
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
-        const args = workspace.getConfiguration('foldercomparison').get<string[]>('commandArguments');
+        const args = workspace.getConfiguration('folderComparison').get<string[]>('commandArguments');
         stdout = execSync(`git diff ${args ? args.join(" ") : ""} ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
     } catch (err: any) {
         stdout = err.stdout;

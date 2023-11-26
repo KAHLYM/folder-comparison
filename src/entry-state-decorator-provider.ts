@@ -35,27 +35,27 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
 
         switch (await this.getStatus(uri)) {
             case Status.Addition: {
-                let decoration: vscode.FileDecoration = new vscode.FileDecoration("A", "addition", new vscode.ThemeColor("foldercomparison.color.added"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("A", "addition", new vscode.ThemeColor("folderComparison.color.added"));
                 decoration.propagate = true;
                 return decoration;
             }
             case Status.Deletion: {
-                let decoration: vscode.FileDecoration = new vscode.FileDecoration("D", "deletion", new vscode.ThemeColor("foldercomparison.color.deleted"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("D", "deletion", new vscode.ThemeColor("folderComparison.color.deleted"));
                 decoration.propagate = true;
                 return decoration;
             }
             case Status.Modification: {
-                let decoration: vscode.FileDecoration = new vscode.FileDecoration("M", "modification", new vscode.ThemeColor("foldercomparison.color.modified"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("M", "modification", new vscode.ThemeColor("folderComparison.color.modified"));
                 decoration.propagate = true;
                 return decoration;
             }
             case Status.Rename: {
-                let decoration: vscode.FileDecoration = new vscode.FileDecoration("R", "rename", new vscode.ThemeColor("foldercomparison.color.renamed"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("R", "rename", new vscode.ThemeColor("folderComparison.color.renamed"));
                 decoration.propagate = true;
                 return decoration;
             }
             case Status.Null: {
-                let decoration: vscode.FileDecoration = new vscode.FileDecoration("", "", new vscode.ThemeColor("foldercomparison.color.ignored"));
+                let decoration: vscode.FileDecoration = new vscode.FileDecoration("", "", new vscode.ThemeColor("folderComparison.color.ignored"));
                 decoration.propagate = true;
                 return decoration;
             }
