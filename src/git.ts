@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
 import { FileSystemTrie } from './trie';
+import { workspace } from 'vscode';
 
 export enum Status {
     Addition,
@@ -10,7 +11,7 @@ export enum Status {
 }
 
 export function statusToString(status: Status) {
-    switch(status) {
+    switch (status) {
         case Status.Addition: {
             return "addition";
         }
@@ -30,7 +31,7 @@ export function statusToString(status: Status) {
 }
 
 export function stringToStatus(status: string) {
-    switch(status) {
+    switch (status) {
         case "addition": {
             return Status.Addition;
         }
@@ -59,8 +60,9 @@ export interface NameStatus {
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
-        stdout = execSync(`git diff --name-status --no-index ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
-    } catch (err: any){
+        const args = workspace.getConfiguration('folderComparison').get<string[]>('commandArguments');
+        stdout = execSync(`git diff ${args ? args.join(" ") : ""} ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
+    } catch (err: any) {
         stdout = err.stdout;
     }
     return parse(stdout.toString(), left.replaceAll('\\', '/') + '/', right.replaceAll('\\', '/') + '/');

@@ -29,22 +29,22 @@ export function activate(context: vscode.ExtensionContext) {
 	let compareFromPath: vscode.Uri;
 	let compareToPath: vscode.Uri;
 
-	vscode.commands.executeCommand('setContext', 'folder-comparison.showCompareWithSelected', false);
-	vscode.commands.executeCommand('setContext', 'folder-comparison.showView', false);
+	vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
+	vscode.commands.executeCommand('setContext', 'folderComparison.showView', false);
 
-	let selectForCompare = vscode.commands.registerCommand('folder-comparison.selectForCompare', async (uri: vscode.Uri) => {
+	let selectForCompare = vscode.commands.registerCommand('folderComparison.selectForCompare', async (uri: vscode.Uri) => {
 		compareFromPath = uri;
 		console.info(`Selection made to compare from '${compareFromPath.path}'`)
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
-		vscode.commands.executeCommand('setContext', 'folder-comparison.showCompareWithSelected', true);
-		vscode.commands.executeCommand('setContext', 'folder-comparison.showView', false);
+		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', true);
+		vscode.commands.executeCommand('setContext', 'folderComparison.showView', false);
 	});
 
-	let compareWithSelected = vscode.commands.registerCommand('folder-comparison.compareWithSelected', async (uri: vscode.Uri) => {
+	let compareWithSelected = vscode.commands.registerCommand('folderComparison.compareWithSelected', async (uri: vscode.Uri) => {
 		compareToPath = uri;
 		console.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
-		vscode.commands.executeCommand('setContext', 'folder-comparison.showCompareWithSelected', false);
-		vscode.commands.executeCommand('setContext', 'folder-comparison.showView', true);
+		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
+		vscode.commands.executeCommand('setContext', 'folderComparison.showView', true);
 
 		new FileExplorer(compareFromPath, compareToPath);
 	});
