@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as utilities from './utilities';
-import { Command, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
+import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
 import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
@@ -41,10 +41,18 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     constructor() { }
 
-    public refresh(left: Uri, right: Uri): void {
+    private _onDidChangeTreeData: EventEmitter<FileTreeItem | undefined | null | void> = new EventEmitter<FileTreeItem | undefined | null | void>();
+    readonly onDidChangeTreeData: Event<FileTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
+
+    public update(left: Uri, right: Uri) {
         this.left = left;
         this.right = right;
         this.cache = diff(this.left.fsPath, this.right.fsPath);
+    }
+
+    public refresh(): void {
+        this.cache = diff(this.left.fsPath, this.right.fsPath);
+        this._onDidChangeTreeData.fire();
     }
 
     private async _stat(path: string): Promise<FileStat> {
