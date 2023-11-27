@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.createTreeView('folderComparison', { treeDataProvider: fileSystemProvider });
 
 	vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
-	vscode.commands.executeCommand('setContext', 'folderComparison.showView', false);
+	vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
 
 	let selectForCompare = vscode.commands.registerCommand('folderComparison.selectForCompare', async (uri: vscode.Uri) => {
 		compareFromPath = uri;
@@ -40,13 +40,14 @@ export function activate(context: vscode.ExtensionContext) {
 		compareToPath = uri;
 		console.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
-		vscode.commands.executeCommand('setContext', 'folderComparison.showView', true);
+		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
 
 	vscode.commands.registerCommand('folderComparison.clear', async () => {
 		fileSystemProvider.clear();
+		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
 	});
 
 	vscode.commands.registerCommand('folderComparison.refresh', async () => {
