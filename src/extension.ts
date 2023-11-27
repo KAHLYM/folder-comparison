@@ -44,7 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showView', true);
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
-		fileSystemProvider.refresh();
 	});
 
 	vscode.commands.registerCommand('folderComparison.refresh', async () => {
