@@ -149,12 +149,12 @@
       "view/title": [
         {
           "command": "folderComparison.clear",
-          "when": "view == folderComparison",
+          "when": "view == folderComparison && folderComparison.showViewTitles",
           "group": "navigation"
         },
         {
           "command": "folderComparison.refresh",
-          "when": "view == folderComparison",
+          "when": "view == folderComparison && folderComparison.showViewTitles",
           "group": "navigation"
         }
       ]
@@ -164,11 +164,16 @@
         {
           "id": "folderComparison",
           "name": "Folder Comparison",
-          "when": "folderComparison.showView",
           "contextualTitle": "Folder Comparison"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "folderComparison",
+        "contents": "In order to use the folder comparison feature, select folders from the explorer context menu i.e. right-click on folders."
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
