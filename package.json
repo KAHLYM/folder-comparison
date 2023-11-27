@@ -117,6 +117,14 @@
         "title": "Compare with Selected Folder"
       },
       {
+        "command": "folderComparison.clear",
+        "title": "Clear",
+        "icon": {
+          "light": "resources/icons/light/clear-all.png",
+          "dark": "resources/icons/dark/clear-all.png"
+        }
+      },
+      {
         "command": "folderComparison.refresh",
         "title": "Refresh",
         "icon": {
@@ -139,6 +147,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "folderComparison.clear",
+          "when": "view == folderComparison",
+          "group": "navigation"
+        },
         {
           "command": "folderComparison.refresh",
           "when": "view == folderComparison",

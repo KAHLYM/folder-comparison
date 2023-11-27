@@ -44,6 +44,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     private _onDidChangeTreeData: EventEmitter<FileTreeItem | undefined | null | void> = new EventEmitter<FileTreeItem | undefined | null | void>();
     readonly onDidChangeTreeData: Event<FileTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
+    public clear(): void {
+        this.update(Uri.parse(""), Uri.parse(""));
+    }
+
     public update(left: Uri, right: Uri): void {
         this.left = left;
         this.right = right;
@@ -51,8 +55,13 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public refresh(): void {
-        this.cache = diff(this.left.fsPath, this.right.fsPath);
+        this.cache = this.isValid() ? diff(this.left.fsPath, this.right.fsPath) : new FileSystemTrie();
         this._onDidChangeTreeData.fire();
+    }
+
+    private isValid(): boolean {
+        // TODO Fix Uri implementation in regards to consistency
+        return this.left.path != Uri.parse("").path && this.right.path != Uri.parse("").path;
     }
 
     private async _stat(path: string): Promise<FileStat> {
@@ -99,6 +108,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
+
+        if (!this.isValid()) {
+            return [];
+        }
 
         if (!element) { // getChildren called against root directory
             const children = await this.readDirectory(this.left.fsPath);
