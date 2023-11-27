@@ -34,7 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
 		console.info(`Selection made to compare from '${compareFromPath.path}'`)
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', true);
-		vscode.commands.executeCommand('setContext', 'folderComparison.showView', false);
 	});
 
 	let compareWithSelected = vscode.commands.registerCommand('folderComparison.compareWithSelected', async (uri: vscode.Uri) => {
@@ -44,6 +43,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showView', true);
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
+	});
+
+	vscode.commands.registerCommand('folderComparison.clear', async () => {
+		fileSystemProvider.clear();
 	});
 
 	vscode.commands.registerCommand('folderComparison.refresh', async () => {
