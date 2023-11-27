@@ -43,16 +43,15 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showView', true);
 
-		vscode.commands.executeCommand('folderComparison.refresh');
+		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
 
-	let refresh = vscode.commands.registerCommand('folderComparison.refresh', async () => {
-		fileSystemProvider.refresh(compareFromPath, compareToPath);
+	vscode.commands.registerCommand('folderComparison.refresh', async () => {
+		fileSystemProvider.refresh();
 	});
 
 	context.subscriptions.push(selectForCompare);
 	context.subscriptions.push(compareWithSelected);
-	context.subscriptions.push(refresh);
 }
 
 async function warnAboutMissingGit(): Promise<void> {
