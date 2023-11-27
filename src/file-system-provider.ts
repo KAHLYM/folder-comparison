@@ -35,11 +35,13 @@ class FileTreeItem extends TreeItem {
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
-    private left: Uri;
-    private right: Uri;
-    private cache: FileSystemTrie;
+    private left: Uri = Uri.parse("");
+    private right: Uri = Uri.parse("");
+    private cache: FileSystemTrie = new FileSystemTrie();
 
-    constructor(left: Uri, right: Uri) {
+    constructor() { }
+
+    public refresh(left: Uri, right: Uri): void {
         this.left = left;
         this.right = right;
         this.cache = diff(this.left.fsPath, this.right.fsPath);

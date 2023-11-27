@@ -5,14 +5,6 @@ import { execSync } from 'child_process';
 
 var path = require('path');
 
-export class FileExplorer {
-	constructor(left: vscode.Uri, right: vscode.Uri) {
-		const treeDataProvider = new fsp.FileSystemProvider(left, right);
-		vscode.window.createTreeView('folderComparison', { treeDataProvider });
-		new esdp.EntryStateDecorationProvider();
-	}
-}
-
 export function activate(context: vscode.ExtensionContext) {
 
 	try {
@@ -28,6 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	let compareFromPath: vscode.Uri;
 	let compareToPath: vscode.Uri;
+
+	new esdp.EntryStateDecorationProvider();
+
+	let fileSystemProvider: fsp.FileSystemProvider = new fsp.FileSystemProvider();
+	vscode.window.createTreeView('folderComparison', { treeDataProvider: fileSystemProvider });
 
 	vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 	vscode.commands.executeCommand('setContext', 'folderComparison.showView', false);
@@ -46,11 +43,16 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showView', true);
 
-		new FileExplorer(compareFromPath, compareToPath);
+		vscode.commands.executeCommand('folderComparison.refresh');
+	});
+
+	let refresh = vscode.commands.registerCommand('folderComparison.refresh', async () => {
+		fileSystemProvider.refresh(compareFromPath, compareToPath);
 	});
 
 	context.subscriptions.push(selectForCompare);
 	context.subscriptions.push(compareWithSelected);
+	context.subscriptions.push(refresh);
 }
 
 async function warnAboutMissingGit(): Promise<void> {
