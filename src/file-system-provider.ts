@@ -44,7 +44,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     private _onDidChangeTreeData: EventEmitter<FileTreeItem | undefined | null | void> = new EventEmitter<FileTreeItem | undefined | null | void>();
     readonly onDidChangeTreeData: Event<FileTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
-    public update(left: Uri, right: Uri) {
+    public update(left: Uri, right: Uri): void {
         this.left = left;
         this.right = right;
         this.cache = diff(this.left.fsPath, this.right.fsPath);
