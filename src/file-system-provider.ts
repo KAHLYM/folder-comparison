@@ -47,8 +47,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     public update(left: Uri, right: Uri): void {
         this.left = left;
         this.right = right;
-        this.cache = diff(this.left.fsPath, this.right.fsPath);
-        this._onDidChangeTreeData.fire();
+        this.refresh();
     }
 
     public refresh(): void {
