@@ -14,7 +14,7 @@
     "theme": "dark"
   },
   "homepage": "https://github.com/KAHLYM/folder-comparison/blob/main/README.md",
-  "icon": "resources/icons/icon_light.png",
+  "icon": "resources/icons/dark/icon.png",
   "keywords": [
     "compare",
     "diff",
@@ -115,6 +115,14 @@
       {
         "command": "folderComparison.compareWithSelected",
         "title": "Compare with Selected Folder"
+      },
+      {
+        "command": "folderComparison.refresh",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/icons/light/refresh.png",
+          "dark": "resources/icons/dark/refresh.png"
+        }
       }
     ],
     "menus": {
@@ -128,6 +136,13 @@
           "command": "folderComparison.compareWithSelected",
           "group": "3_compare@4",
           "when": "explorerResourceIsFolder && folderComparison.showCompareWithSelected"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "folderComparison.refresh",
+          "when": "view == folderComparison",
+          "group": "navigation"
         }
       ]
     },
