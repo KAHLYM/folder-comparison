@@ -110,15 +110,18 @@
     "commands": [
       {
         "command": "folderComparison.selectForCompare",
-        "title": "Select for Compare"
+        "title": "Select for Compare",
+        "category": "Folder Comparison"
       },
       {
         "command": "folderComparison.compareWithSelected",
-        "title": "Compare with Selected Folder"
+        "title": "Compare with Selected Folder",
+        "category": "Folder Comparison"
       },
       {
         "command": "folderComparison.clear",
         "title": "Clear",
+        "category": "Folder Comparison",
         "icon": {
           "light": "resources/icons/light/clear-all.png",
           "dark": "resources/icons/dark/clear-all.png"
@@ -127,6 +130,7 @@
       {
         "command": "folderComparison.refresh",
         "title": "Refresh",
+        "category": "Folder Comparison",
         "icon": {
           "light": "resources/icons/light/refresh.png",
           "dark": "resources/icons/dark/refresh.png"
@@ -134,6 +138,16 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "folderComparison.selectForCompare",
+          "when": "false"
+        },
+        {
+          "command": "folderComparison.compareWithSelected",
+          "when": "false"
+        }
+      ],
       "explorer/context": [
         {
           "command": "folderComparison.selectForCompare",
