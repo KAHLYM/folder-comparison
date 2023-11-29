@@ -2,7 +2,7 @@
   "name": "folder-comparison",
   "displayName": "Folder Comparison",
   "description": "Compare two folders using Git",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "engines": {
     "vscode": "^1.82.0"
   },
@@ -203,15 +203,25 @@
             "id": "runSelectForCompare",
             "title": "Make a Folder Comparison",
             "description": "1. From the file explorer view, right click on a folder and click 'Select for Compare'\n2. From the file explorer view, right click on a folder and click 'Compare with Selected Folder'\n3. View the comparison from the explorer view named 'FOLDER COMPARISON'",
-            "media": { "image": "resources/walkthrough/CompareWithSelected.svg", "altText": "Compare with Selected" },
-            "completionEvents": ["onCommand:folderComparison.compareWithSelected"]
+            "media": {
+              "image": "resources/walkthrough/CompareWithSelected.svg",
+              "altText": "Compare with Selected"
+            },
+            "completionEvents": [
+              "onCommand:folderComparison.compareWithSelected"
+            ]
           },
           {
             "id": "runOpenSettings",
             "title": "Open Settings",
             "description": "Browse available settings.\n[Open Settings](command:folderComparison.openSettings)",
-            "media": { "image": "resources/walkthrough/Settings.svg", "altText": "Open Settings" },
-            "completionEvents": ["onCommand:folderComparison.openSettings"]
+            "media": {
+              "image": "resources/walkthrough/Settings.svg",
+              "altText": "Open Settings"
+            },
+            "completionEvents": [
+              "onCommand:folderComparison.openSettings"
+            ]
           }
         ]
       }
