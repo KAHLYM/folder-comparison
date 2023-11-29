@@ -45,6 +45,10 @@ export function activate(context: vscode.ExtensionContext) {
 		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
 
+	let openSettings = vscode.commands.registerCommand('folderComparison.openSettings', async () => {
+		vscode.commands.executeCommand( 'workbench.action.openSettings', '@ext:KAHLYM.folder-comparison');
+	});
+
 	vscode.commands.registerCommand('folderComparison.clear', async () => {
 		fileSystemProvider.clear();
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
@@ -56,6 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(selectForCompare);
 	context.subscriptions.push(compareWithSelected);
+	context.subscriptions.push(openSettings);
 }
 
 async function warnAboutMissingGit(): Promise<void> {
