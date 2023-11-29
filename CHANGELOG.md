@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2023-11-29
+
+### Added
+
+- Clear action to view
+- Refresh action to view
+- Walkthrough
+
+### Changes
+
+- Extend tab names for additions, deletions and renames
+
 ## [0.3.0] - 2023-11-25
 
 ### Added
