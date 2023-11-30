@@ -42,6 +42,13 @@
             "--no-index"
           ],
           "markdownDescription": "Specifies arguments to pass to the `git diff` command"
+        },
+        "folderComparison.refreshInterval": {
+          "type": "number",
+          "default": 5,
+          "minimum": 5,
+          "maximum": 3600,
+          "markdownDescription": "Specifies the interval in seconds to refresh the git comparison"
         }
       }
     },

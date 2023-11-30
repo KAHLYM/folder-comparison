@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 		warnAboutMissingGit();
 		return;
 	}
-	
+
 	let compareFromPath: vscode.Uri;
 	let compareToPath: vscode.Uri;
 
@@ -61,6 +61,20 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(selectForCompare);
 	context.subscriptions.push(compareWithSelected);
 	context.subscriptions.push(openSettings);
+
+	function setRefreshInterval(): NodeJS.Timer {
+		let intervalInSeconds = vscode.workspace.getConfiguration('folderComparison').get<number>('refreshInterval') ?? Number.MAX_SAFE_INTEGER;
+		return setInterval(fileSystemProvider.refresh, intervalInSeconds * 1000);
+	}
+
+	let refreshInterval = setRefreshInterval();
+	
+	vscode.workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration("folderComparison.refreshInterval")) {
+			clearInterval(refreshInterval);
+			refreshInterval = setRefreshInterval();
+        }
+    })
 }
 
 async function warnAboutMissingGit(): Promise<void> {
