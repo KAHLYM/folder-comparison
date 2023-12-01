@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import { FileSystemTrie } from './trie';
 import { workspace } from 'vscode';
+import { createHash } from 'crypto';
 
 export enum Status {
     Addition,
@@ -57,15 +58,31 @@ export interface NameStatus {
     right: string;
 }
 
+let cache = { 
+    hash: createHash("md5").update("").digest("hex"),
+    data: new FileSystemTrie(),
+}
+
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
         const args = workspace.getConfiguration('folderComparison').get<string[]>('commandArguments');
         stdout = execSync(`git diff ${args ? args.join(" ") : ""} ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
-    } catch (err: any) {
+} catch (err: any) {
         stdout = err.stdout;
     }
-    return parse(stdout.toString(), left.replaceAll('\\', '/') + '/', right.replaceAll('\\', '/') + '/');
+    
+    let newHash: string = createHash("md5").update(stdout).digest("hex");
+    if (newHash == cache.hash) {
+        return cache.data;
+    }
+
+    let parsed = parse(stdout.toString(), left.replaceAll('\\', '/') + '/', right.replaceAll('\\', '/') + '/');
+
+    cache.hash = newHash;
+    cache.data = parsed;
+
+    return parsed;
 }
 
 const name_status_regex: RegExp = /(?<status>[A-Z])(?<score>[0-9]*)\s+(?<left>[^\s]+)\s*(?<right>[^\s]*)/;

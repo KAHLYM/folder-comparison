@@ -64,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function setRefreshInterval(): NodeJS.Timer {
 		let intervalInSeconds = vscode.workspace.getConfiguration('folderComparison').get<number>('refreshInterval') ?? Number.MAX_SAFE_INTEGER;
-		return setInterval(fileSystemProvider.refresh, intervalInSeconds * 1000);
+		return setInterval(fileSystemProvider.refresh.bind(fileSystemProvider), intervalInSeconds * 1000);
 	}
 
 	let refreshInterval = setRefreshInterval();
