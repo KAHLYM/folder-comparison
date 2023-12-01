@@ -14,7 +14,7 @@
     "theme": "dark"
   },
   "homepage": "https://github.com/KAHLYM/folder-comparison/blob/main/README.md",
-  "icon": "resources/icons/dark/icon.png",
+  "icon": "resources/icons/icon.png",
   "keywords": [
     "compare",
     "diff",
@@ -127,19 +127,13 @@
         "command": "folderComparison.clear",
         "title": "Clear",
         "category": "Folder Comparison",
-        "icon": {
-          "light": "resources/icons/light/clear-all.png",
-          "dark": "resources/icons/dark/clear-all.png"
-        }
+        "icon": "$(clear-all)"
       },
       {
         "command": "folderComparison.refresh",
         "title": "Refresh",
         "category": "Folder Comparison",
-        "icon": {
-          "light": "resources/icons/light/refresh.png",
-          "dark": "resources/icons/dark/refresh.png"
-        }
+        "icon": "$(refresh)"
       }
     ],
     "menus": {
