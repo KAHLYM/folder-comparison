@@ -68,7 +68,7 @@ export function diff(left: string, right: string): FileSystemTrie {
     try {
         const args = workspace.getConfiguration('folderComparison').get<string[]>('commandArguments');
         stdout = execSync(`git diff ${args ? args.join(" ") : ""} ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
-} catch (err: any) {
+    } catch (err: any) {
         stdout = err.stdout;
     }
     
@@ -77,7 +77,7 @@ export function diff(left: string, right: string): FileSystemTrie {
         return cache.data;
     }
 
-    let parsed = parse(stdout.toString(), left.replaceAll('\\', '/') + '/', right.replaceAll('\\', '/') + '/');
+    const parsed = parse(stdout.toString(), left.replaceAll('\\', '/') + '/', right.replaceAll('\\', '/') + '/');
 
     cache.hash = newHash;
     cache.data = parsed;
