@@ -2,10 +2,17 @@ import * as vscode from 'vscode';
 import * as fsp from './file-system-provider';
 import * as esdp from './entry-state-decorator-provider';
 import { execSync } from 'child_process';
+import TelemetryReporter from '@vscode/extension-telemetry';
 
 var path = require('path');
 
+let reporter;
+const key = '22d59bdf-831e-48dd-adde-3374ac09c4a0';
+
 export function activate(context: vscode.ExtensionContext) {
+
+	reporter = new TelemetryReporter(key);
+	context.subscriptions.push(reporter);
 
 	try {
 		execSync('git version');
