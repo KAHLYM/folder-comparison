@@ -6,13 +6,14 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 
 var path = require('path');
 
-let reporter;
+let reporter: TelemetryReporter;
 const key = '22d59bdf-831e-48dd-adde-3374ac09c4a0';
 
 export function activate(context: vscode.ExtensionContext) {
 
 	reporter = new TelemetryReporter(key);
 	context.subscriptions.push(reporter);
+	reporter.sendTelemetryEvent('activation');
 
 	try {
 		execSync('git version');
@@ -37,6 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
 
 	let selectForCompare = vscode.commands.registerCommand('folderComparison.selectForCompare', async (uri: vscode.Uri) => {
+		reporter.sendTelemetryEvent('command.selectForCompare');
 		compareFromPath = uri;
 		console.info(`Selection made to compare from '${compareFromPath.path}'`)
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
@@ -44,6 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let compareWithSelected = vscode.commands.registerCommand('folderComparison.compareWithSelected', async (uri: vscode.Uri) => {
+		reporter.sendTelemetryEvent('command.compareWithSelected');
 		compareToPath = uri;
 		console.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
@@ -53,15 +56,18 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let openSettings = vscode.commands.registerCommand('folderComparison.openSettings', async () => {
-		vscode.commands.executeCommand( 'workbench.action.openSettings', '@ext:KAHLYM.folder-comparison');
+		reporter.sendTelemetryEvent('command.openSettings');
+		vscode.commands.executeCommand('workbench.action.openSettings', '@ext:KAHLYM.folder-comparison');
 	});
 
 	vscode.commands.registerCommand('folderComparison.clear', async () => {
+		reporter.sendTelemetryEvent('command.clear');
 		fileSystemProvider.clear();
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
 	});
 
 	vscode.commands.registerCommand('folderComparison.refresh', async () => {
+		reporter.sendTelemetryEvent('command.refresh');
 		fileSystemProvider.refresh();
 	});
 
@@ -75,16 +81,17 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	let refreshInterval = setRefreshInterval();
-	
+
 	vscode.workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration("folderComparison.refreshInterval")) {
+		if (event.affectsConfiguration("folderComparison.refreshInterval")) {
 			clearInterval(refreshInterval);
 			refreshInterval = setRefreshInterval();
-        }
-    })
+		}
+	})
 }
 
 async function warnAboutMissingGit(): Promise<void> {
+	reporter.sendTelemetryEvent('git.warning');
 	const download = 'Download Git';
 	const choice = await vscode.window.showWarningMessage(
 		'Git not found. Please install Git.',
@@ -92,6 +99,7 @@ async function warnAboutMissingGit(): Promise<void> {
 	);
 
 	if (choice === download) {
+		reporter.sendTelemetryEvent('git.warning.download');
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse('https://aka.ms/vscode-download-git'));
 	}
 }
