@@ -67,8 +67,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
 	});
 
-	vscode.commands.registerCommand('folderComparison.refresh', async () => {
-		reporter.sendTelemetryEvent('command.refresh');
+	vscode.commands.registerCommand('folderComparison.refresh', async (telemetry: boolean = true) => {
+		// This `folderComparison.refresh` command is called from within `setInterval` and would raise
+		// telemetry too frequently. We do not need telemetry on non-user-driven activity so allow 
+		// function calls to opt-out of telemetry. If the user were to select the refresh button from
+		// the UI, `telemetry` would be `true`.
+		if (telemetry) {
+			reporter.sendTelemetryEvent('command.refresh');
+		}
 		fileSystemProvider.refresh();
 	});
 
@@ -78,7 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	function setRefreshInterval(): NodeJS.Timer {
 		let intervalInSeconds = vscode.workspace.getConfiguration('folderComparison').get<number>('refreshInterval') ?? Number.MAX_SAFE_INTEGER;
-		return setInterval(fileSystemProvider.refresh.bind(fileSystemProvider), intervalInSeconds * 1000);
+		// @ts-ignore
+		return setInterval(fileSystemProvider.refresh.bind(fileSystemProvider, false), intervalInSeconds * 1000);
 	}
 
 	let refreshInterval = setRefreshInterval();
