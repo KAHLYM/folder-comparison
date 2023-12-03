@@ -69,4 +69,23 @@ export class FileSystemTrie {
 
         return Object.values(node.children);
     }
+
+    public getNumberOfLeaves(): number {
+        let numberOfLeaves: number = 0;
+
+        let leaves: FileSystemTrieNode[] = [this.root];
+        while (leaves.length) {
+            let leaf: FileSystemTrieNode = leaves[0];
+            if (leaf.children.length) {
+                for (const child of Object.values(leaf.children)) {
+                    leaves.push(child);
+                }
+            } else {
+                numberOfLeaves += 1;
+            }
+            leaves.pop();
+        }
+
+        return numberOfLeaves;
+    }
 }

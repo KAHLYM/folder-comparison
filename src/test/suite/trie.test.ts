@@ -203,4 +203,22 @@ suite('trie', () => {
             assert.equal(2, trie.getChildren("foo").length);
         });
     });
+
+    suite('getNumberOfLeaves function', () => {
+
+        test('handles empty tree', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+
+            assert.equal(1, trie.getNumberOfLeaves());
+        });
+
+        test('handles non-empty tree', () => {
+            let trie: MockFileSystemTrie = new MockFileSystemTrie();
+            trie.add("foo/bar.txt", null, { });
+            trie.add("foo/bar/baz.txt", null, { });
+            trie.add("foo/bar/baw.txt", null, { });
+
+            assert.equal(3, trie.getNumberOfLeaves());
+        });
+    });
 });
