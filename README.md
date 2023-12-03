@@ -1,5 +1,3 @@
-# Folder Comparison
-
 This extension provides the ability to compare two folders within Visual Studio Code.
 
 ## Features
