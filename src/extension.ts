@@ -109,6 +109,8 @@ async function warnAboutMissingGit(): Promise<void> {
 	if (choice === download) {
 		reporter.sendTelemetryEvent('git.warning.download');
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse('https://aka.ms/vscode-download-git'));
+	} else {
+		reporter.sendTelemetryEvent('git.warning.dismiss');
 	}
 }
 
