@@ -20,6 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
 		execSync('git version');
 	} catch (err: any) {
 		if (!/\'git\' is not recognized as an internal or external command/.test(err.message || '')) {
+			// To protect user privacy, do not send error message in telemetry
+			reporter.sendTelemetryErrorEvent('git.version');
 			throw err;
 		}
 
