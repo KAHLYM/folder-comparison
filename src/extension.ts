@@ -8,7 +8,7 @@ import { isProduction } from './config'
 var path = require('path');
 
 let reporter: TelemetryReporter;
-const key = isProduction() ? '72789bd2-9cfb-47c9-9308-636866ea5065' : '72789bd2-9cfb-47c9-9308-636866ea5065';
+const key = isProduction() ? '8fce904f-cf3a-4160-9107-82c024e9c258' : '8fce904f-cf3a-4160-9107-82c024e9c258';
 
 export function activate(context: vscode.ExtensionContext) {
 
