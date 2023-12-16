@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 	reporter = new TelemetryReporter(key);
 	context.subscriptions.push(reporter);
 	reporter.sendTelemetryEvent('activation');
+	logger.info(`Activated extension`);
 
 	try {
 		execSync('git version');
@@ -23,6 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!/\'git\' is not recognized as an internal or external command/.test(err.message || '')) {
 			// To protect user privacy, do not send error message in telemetry
 			reporter.sendTelemetryErrorEvent('git.version');
+			logger.error(`Unknown git output: ${err.message}`);
 			throw err;
 		}
 
@@ -43,30 +45,34 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let selectForCompare = vscode.commands.registerCommand('folderComparison.selectForCompare', async (uri: vscode.Uri) => {
 		reporter.sendTelemetryEvent('command.selectForCompare');
-		compareFromPath = uri;
-		
 		logger.info(`Selection made to compare from '${compareFromPath.path}'`);
+		
+		compareFromPath = uri;
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', true);
 	});
 
 	let compareWithSelected = vscode.commands.registerCommand('folderComparison.compareWithSelected', async (uri: vscode.Uri) => {
 		reporter.sendTelemetryEvent('command.compareWithSelected');
-		compareToPath = uri;
 		logger.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
+		
+		compareToPath = uri;
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
-
 		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
 
 	let openSettings = vscode.commands.registerCommand('folderComparison.openSettings', async () => {
 		reporter.sendTelemetryEvent('command.openSettings');
+		logger.debug(`Command issued to open settings`);
+
 		vscode.commands.executeCommand('workbench.action.openSettings', '@ext:KAHLYM.folder-comparison');
 	});
 
 	vscode.commands.registerCommand('folderComparison.clear', async () => {
 		reporter.sendTelemetryEvent('command.clear');
+		logger.debug(`Command issued to clear`);
+
 		fileSystemProvider.clear();
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', false);
 	});
@@ -78,6 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// the UI, `telemetry` would be `true`.
 		if (telemetry) {
 			reporter.sendTelemetryEvent('command.refresh');
+			logger.debug(`Command issued to refresh`);
 		}
 		fileSystemProvider.refresh();
 	});
@@ -106,6 +113,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function warnAboutMissingGit(): Promise<void> {
 	reporter.sendTelemetryEvent('git.warning');
+	logger.warning(`Git is missing`);
+
 	const download = 'Download Git';
 	const choice = await vscode.window.showWarningMessage(
 		'Git not found. Please install Git.',
@@ -114,9 +123,12 @@ async function warnAboutMissingGit(): Promise<void> {
 
 	if (choice === download) {
 		reporter.sendTelemetryEvent('git.warning.download');
+		logger.debug(`User selected to download Git`);
+
 		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse('https://aka.ms/vscode-download-git'));
 	} else {
 		reporter.sendTelemetryEvent('git.warning.dismiss');
+		logger.debug(`User selected to dismiss Git`);
 	}
 }
 
