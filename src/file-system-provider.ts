@@ -239,7 +239,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
-                        this.getRightUri(element) + " (Added)"
+                        this.getRightUri(element)
                     ]
                 }
             case Status.Deletion:
@@ -247,7 +247,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
-                        this.getLeftUri(element) + " (Deleted)"
+                        this.getLeftUri(element)
                     ]
                 }
             case Status.Modification:
@@ -265,7 +265,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
-                        this.getRightUri(element) + " (Renamed)"
+                        this.getRightUri(element),
                     ]
                 }
             case Status.Null:
