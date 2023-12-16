@@ -49,6 +49,11 @@
           "minimum": 5,
           "maximum": 3600,
           "markdownDescription": "Specifies the interval in seconds to refresh the git comparison"
+        },
+        "folderComparison.logLevel": {
+          "type": "string",
+          "default": "Info",
+          "enum": ["Trace", "Debug", "Info", "Warning", "Error", "Fatal"]
         }
       }
     },
