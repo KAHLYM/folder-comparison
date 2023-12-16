@@ -11,9 +11,10 @@ export namespace logger {
         Fatal,
     }
 
-    export const DefaultLevel: string = enumToString(Level.Info);
+    const _defaultLevel = Level.Info;
+    export const DefaultLevel: string = enumToString(_defaultLevel);
 
-    let _level: Level;
+    let _level: Level = _defaultLevel;
     export function setLogLevel(level: string) {
         _level = stringToEnum(level);
     }

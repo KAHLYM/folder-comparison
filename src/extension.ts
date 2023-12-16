@@ -3,7 +3,8 @@ import * as fsp from './file-system-provider';
 import * as esdp from './entry-state-decorator-provider';
 import { execSync } from 'child_process';
 import TelemetryReporter from '@vscode/extension-telemetry';
-import { isProduction } from './config'
+import { isProduction } from './config';
+import { logger } from './logger';
 
 var path = require('path');
 
@@ -43,7 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 	let selectForCompare = vscode.commands.registerCommand('folderComparison.selectForCompare', async (uri: vscode.Uri) => {
 		reporter.sendTelemetryEvent('command.selectForCompare');
 		compareFromPath = uri;
-		console.info(`Selection made to compare from '${compareFromPath.path}'`)
+		
+		logger.info(`Selection made to compare from '${compareFromPath.path}'`);
 		vscode.window.showInformationMessage(`Selected '${path.basename(compareFromPath.path)}' for comparison`);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', true);
 	});
@@ -51,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let compareWithSelected = vscode.commands.registerCommand('folderComparison.compareWithSelected', async (uri: vscode.Uri) => {
 		reporter.sendTelemetryEvent('command.compareWithSelected');
 		compareToPath = uri;
-		console.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
+		logger.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`)
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
 
@@ -96,6 +98,8 @@ export function activate(context: vscode.ExtensionContext) {
 		if (event.affectsConfiguration("folderComparison.refreshInterval")) {
 			clearInterval(refreshInterval);
 			refreshInterval = setRefreshInterval();
+		} else if (event.affectsConfiguration("folderComparison.logLevel")) {
+			logger.setLogLevel(vscode.workspace.getConfiguration('folderComparison').get<string>('logLevel') ?? logger.DefaultLevel);
 		}
 	})
 }
