@@ -112,6 +112,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const logLevel = vscode.workspace.getConfiguration('folderComparison').get<string>('logLevel') ?? logger.DefaultLevel;
 			logger.info(`User configured log level to be ${logLevel}`);
 			logger.setLogLevel(logLevel);
+		}  else if (event.affectsConfiguration("folderComparison.showUnchanged")) {
+			fileSystemProvider.refresh();
 		}
 	})
 }
