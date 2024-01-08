@@ -9,7 +9,7 @@ import { logger } from './logger';
 var path = require('path');
 
 let reporter: TelemetryReporter;
-const key = isProduction() ? '8fce904f-cf3a-4160-9107-82c024e9c258' : '8fce904f-cf3a-4160-9107-82c024e9c258';
+const key = isProduction() ? 'c6ac3418-0023-4e5a-9d3b-bdc4a81e6c53' : '8fce904f-cf3a-4160-9107-82c024e9c258';
 
 export function activate(context: vscode.ExtensionContext) {
 
