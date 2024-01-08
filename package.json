@@ -61,6 +61,11 @@
             "Error",
             "Fatal"
           ]
+        },
+        "folderComparison.showUnchanged": {
+          "type": "boolean",
+          "default": "false",
+          "markdownDescription": "Specifies whether to show unchanged files"
         }
       }
     },
