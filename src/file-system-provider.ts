@@ -182,8 +182,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         }
                         break;
                     case Status.Null:
-                        if (childCache[leftSubpath] == undefined) {
-                            childCache[leftSubpath] = new FileTreeItem(
+                        if (childCache[item.key] == undefined) {
+                            childCache[item.key] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
                                 directory == "" ? item.key : directory + path.posix.sep + item.key,
