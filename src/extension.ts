@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let selectForCompare = vscode.commands.registerCommand('folderComparison.selectForCompare', async (uri: vscode.Uri) => {
 		reporter.sendTelemetryEvent('command.selectForCompare');
-		
+
 		compareFromPath = uri;
 		logger.info(`Selection made to compare from '${compareFromPath.path}'`);
 
@@ -55,10 +55,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let compareWithSelected = vscode.commands.registerCommand('folderComparison.compareWithSelected', async (uri: vscode.Uri) => {
 		reporter.sendTelemetryEvent('command.compareWithSelected');
-		
+
 		compareToPath = uri;
 		logger.info(`Selection made to compare from '${compareFromPath.path}' to '${compareToPath.path}'`);
-		
+
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
 
@@ -112,6 +112,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const logLevel = vscode.workspace.getConfiguration('folderComparison').get<string>('logLevel') ?? logger.DefaultLevel;
 			logger.info(`User configured log level to be ${logLevel}`);
 			logger.setLogLevel(logLevel);
+		} else if (event.affectsConfiguration("folderComparison.showUnchanged")) {
+			fileSystemProvider.refresh();
 		}
 	})
 }

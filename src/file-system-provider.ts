@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as utilities from './utilities';
-import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState } from 'vscode'
+import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode'
 import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
@@ -116,12 +116,14 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         if (!element) { // getChildren called against root directory
             const children = await this.readDirectory(this.left.fsPath);
             children.map(([name, type]) => {
-                childCache[toUnix(name)] = new FileTreeItem(
-                    Uri.parse(path.join(this.left.fsPath, name)),
-                    Uri.parse(""),
-                    name,
-                    type,
-                    Status.Null);
+                if (this.cache.exists(toUnix(name)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
+                    childCache[toUnix(name)] = new FileTreeItem(
+                        Uri.parse(path.join(this.left.fsPath, name)),
+                        Uri.parse(""),
+                        name,
+                        type,
+                        Status.Null);
+                }
             });
         } else { // getChildren called against subdirectory
             const subdirectory = path.join(this.left.fsPath, element.subpath);
@@ -130,12 +132,14 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 const children = await this.readDirectory(subdirectory);
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.subpath, name);
-                    childCache[toUnix(namepath)] = new FileTreeItem(
-                        Uri.parse(path.join(this.left.fsPath, toUnix(namepath))),
-                        Uri.parse(""),
-                        toUnix(namepath),
-                        type,
-                        Status.Null);
+                    if (this.cache.exists(toUnix(namepath)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
+                        childCache[toUnix(namepath)] = new FileTreeItem(
+                            Uri.parse(path.join(this.left.fsPath, toUnix(namepath))),
+                            Uri.parse(""),
+                            toUnix(namepath),
+                            type,
+                            Status.Null);
+                        }
                 });
             }
         }
@@ -150,7 +154,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
                 switch (item.content.status) {
                     case Status.Addition:
-                        childCache[item.key] = new FileTreeItem(
+                        childCache[rightSubpath] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
                             directory == "" ? item.key : directory + path.posix.sep + item.key,
@@ -159,10 +163,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         );
                         break;
                     case Status.Deletion:
-                        childCache[item.key].status = Status.Deletion;
+                        childCache[leftSubpath].status = Status.Deletion;
                         break;
                     case Status.Modification:
-                        childCache[item.key].status = Status.Modification;
+                        childCache[leftSubpath].status = Status.Modification;
                         break;
                     case Status.Rename:
                         if (childCache[leftSubpath] != undefined) {
@@ -178,8 +182,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         }
                         break;
                     case Status.Null:
-                        if (childCache[item.key] == undefined) {
-                            childCache[item.key] = new FileTreeItem(
+                        if (childCache[leftSubpath] == undefined) {
+                            childCache[leftSubpath] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
                                 directory == "" ? item.key : directory + path.posix.sep + item.key,
