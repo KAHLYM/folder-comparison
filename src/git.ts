@@ -61,7 +61,7 @@ export interface NameStatus {
 let cache = { 
     hash: createHash("md5").update("").digest("hex"),
     data: new FileSystemTrie(),
-;}
+};
 
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
