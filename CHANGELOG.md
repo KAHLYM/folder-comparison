@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2024-01-11
+
+### Added
+
+- Configuration to show/hide unchanged files
+
+### Changed
+
+- Example GIF in readme
+  
 ## [0.7.0] - 2023-12-17
 
 ### Added
@@ -24,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refresh interval configurable through user settings
 
-### Changes
+### Changed
 
 - Adjust extension icon color and use standardised icons
 
@@ -40,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refresh action to view
 - Walkthrough
 
-### Changes
+### Changed
 
 - Extend tab names for additions, deletions and renames
 
@@ -57,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - MIT license
   
-### Changes
+### Changed
 
 - Replace cache data structure Dictionary with Trie
 
