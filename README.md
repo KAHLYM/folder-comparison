@@ -10,7 +10,7 @@ There is one simple feature; compare two folders.
 2. From the file explorer view, right click on a folder and click "Compare with Selected Folder"
 3. View the comparison from the new explorer view named "FOLDER COMPARISON"
 
-#### Visual Example of [commit 1088261 in git.git repository](https://repo.or.cz/w/git.git/commitdiff/1088261f6fc90324014b5306cca4171987da85ce#patch3)
+#### Visual Example
 
 ![example](resources/readme/example.gif)
 
