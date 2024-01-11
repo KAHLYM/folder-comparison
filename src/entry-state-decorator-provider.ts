@@ -34,22 +34,22 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
         }
 
         switch (await this.getStatus(uri)) {
-            case Status.Addition: {
+            case Status.addition: {
                 let decoration: vscode.FileDecoration = new vscode.FileDecoration("A", "addition", new vscode.ThemeColor("folderComparison.color.added"));
                 decoration.propagate = true;
                 return decoration;
             }
-            case Status.Deletion: {
+            case Status.deletion: {
                 let decoration: vscode.FileDecoration = new vscode.FileDecoration("D", "deletion", new vscode.ThemeColor("folderComparison.color.deleted"));
                 decoration.propagate = true;
                 return decoration;
             }
-            case Status.Modification: {
+            case Status.modification: {
                 let decoration: vscode.FileDecoration = new vscode.FileDecoration("M", "modification", new vscode.ThemeColor("folderComparison.color.modified"));
                 decoration.propagate = true;
                 return decoration;
             }
-            case Status.Rename: {
+            case Status.rename: {
                 let decoration: vscode.FileDecoration = new vscode.FileDecoration("R", "rename", new vscode.ThemeColor("folderComparison.color.renamed"));
                 decoration.propagate = true;
                 return decoration;

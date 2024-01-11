@@ -4,25 +4,25 @@ import { workspace } from 'vscode';
 import { createHash } from 'crypto';
 
 export enum Status {
-    Addition,
-    Deletion,
-    Modification,
-    Rename,
-    Null,
+    addition,
+    deletion,
+    modification,
+    rename,
+    null,
 }
 
 export function statusToString(status: Status) {
     switch (status) {
-        case Status.Addition: {
+        case Status.addition: {
             return "addition";
         }
-        case Status.Deletion: {
+        case Status.deletion: {
             return "deletion";
         }
-        case Status.Modification: {
+        case Status.modification: {
             return "modification";
         }
-        case Status.Rename: {
+        case Status.rename: {
             return "rename";
         }
         default: {
@@ -34,16 +34,16 @@ export function statusToString(status: Status) {
 export function stringToStatus(status: string) {
     switch (status) {
         case "addition": {
-            return Status.Addition;
+            return Status.addition;
         }
         case "deletion": {
-            return Status.Deletion;
+            return Status.deletion;
         }
         case "modification": {
-            return Status.Modification;
+            return Status.modification;
         }
         case "rename": {
-            return Status.Rename;
+            return Status.rename;
         }
         default: {
             return Status.Null
@@ -98,16 +98,16 @@ function parse(output: string, leftHi: string, rightHi: string): FileSystemTrie 
         const intermediate: NameStatus = { status: Status.Null, score: 0, left: "", right: "" };
         switch (status) {
             case 'A':
-                trie.add(leftSubpath, { status: Status.Addition, score: 0, left: "", right: left }, intermediate);
+                trie.add(leftSubpath, { status: Status.addition, score: 0, left: "", right: left }, intermediate);
                 break;
             case 'D':
-                trie.add(leftSubpath, { status: Status.Deletion, score: 0, left: left, right: right }, intermediate);
+                trie.add(leftSubpath, { status: Status.deletion, score: 0, left: left, right: right }, intermediate);
                 break;
             case 'M':
-                trie.add(leftSubpath, { status: Status.Modification, score: 0, left: left, right: right }, intermediate);
+                trie.add(leftSubpath, { status: Status.modification, score: 0, left: left, right: right }, intermediate);
                 break;
             case 'R':
-                const nameStatus: NameStatus = { status: Status.Rename, score: parseInt(score), left: left, right: right };
+                const nameStatus: NameStatus = { status: Status.rename, score: parseInt(score), left: left, right: right };
                 trie.add(leftSubpath, nameStatus, intermediate);
                 trie.add(rightSubpath, nameStatus, intermediate);
                 break;

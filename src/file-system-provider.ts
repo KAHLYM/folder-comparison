@@ -153,7 +153,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 const rightSubpath: string = this.removePrefix(item.content.right, false, true);
 
                 switch (item.content.status) {
-                    case Status.Addition:
+                    case Status.addition:
                         childCache[rightSubpath] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
@@ -162,13 +162,13 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             item.content.status
                         );
                         break;
-                    case Status.Deletion:
-                        childCache[leftSubpath].status = Status.Deletion;
+                    case Status.deletion:
+                        childCache[leftSubpath].status = Status.deletion;
                         break;
-                    case Status.Modification:
-                        childCache[leftSubpath].status = Status.Modification;
+                    case Status.modification:
+                        childCache[leftSubpath].status = Status.modification;
                         break;
-                    case Status.Rename:
+                    case Status.rename:
                         if (childCache[leftSubpath] !== undefined) {
                             delete childCache[leftSubpath];
                         } else if (childCache[rightSubpath] !== undefined) {
@@ -182,11 +182,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         }
                         break;
                     case Status.Null:
-                        if (childCache[item.key] == undefined) {
+                        if (childCache[item.key] === undefined) {
                             childCache[item.key] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
-                                directory == "" ? item.key : directory + path.posix.sep + item.key,
+                                directory === "" ? item.key : directory + path.posix.sep + item.key,
                                 FileType.Directory,
                                 item.content.status
                             );
@@ -233,28 +233,28 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     private getRightUri(element: FileTreeItem): Uri {
-        return Uri.file(this.right.path.substring(1) + path.posix.sep + element?.subpath)
+        return Uri.file(this.right.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
     private getCommand(element: FileTreeItem): Command | void {
         switch (element.status) {
-            case Status.Addition:
+            case Status.addition:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getRightUri(element)
                     ]
-                }
-            case Status.Deletion:
+                };
+            case Status.deletion:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getLeftUri(element)
                     ]
-                }
-            case Status.Modification:
+                };
+            case Status.modification:
                 return {
                     command: 'vscode.diff',
                     title: 'Open',
@@ -263,15 +263,15 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         this.getRightUri(element),
                         element.subpath + " (Modified)"
                     ]
-                }
-            case Status.Rename:
+                };
+            case Status.rename:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getRightUri(element),
                     ]
-                }
+                };
             case Status.Null:
                 return {
                     command: 'vscode.open',
@@ -279,7 +279,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     arguments: [
                         this.getLeftUri(element),
                     ]
-                }
+                };
         }
     }
 }
