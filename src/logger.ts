@@ -12,7 +12,7 @@ export namespace logger {
     }
 
     const _defaultLevel = Level.info;
-    export const DefaultLevel: string = enumToString(_defaultLevel);
+    export const defaultLevel: string = enumToString(_defaultLevel);
 
     let _level: Level = _defaultLevel;
     export function setLogLevel(level: string) {
