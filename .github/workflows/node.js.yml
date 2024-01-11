@@ -24,6 +24,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install
-    - run: xvfb-run -a npm test
-    - run: npm test
+    - name: Setup environment
+      run: |
+        npm install
+        xvfb-run -a npm test
+    - name: Build and test
+      run: npm test
