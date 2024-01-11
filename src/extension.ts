@@ -115,7 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
 		} else if (event.affectsConfiguration("folderComparison.showUnchanged")) {
 			fileSystemProvider.refresh();
 		}
-	})
+	});
 }
 
 async function warnAboutMissingGit(): Promise<void> {

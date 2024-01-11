@@ -29,7 +29,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     }
 
     async provideFileDecoration(uri: vscode.Uri) {
-        if (uri.scheme != "file-comparison") {
+        if (uri.scheme !== "file-comparison") {
             return null;
         }
 

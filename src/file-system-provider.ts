@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as utilities from './utilities';
-import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode'
+import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode';
 import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
@@ -61,7 +61,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     private isValid(): boolean {
         // TODO Fix Uri implementation in regards to consistency
-        return this.left.path != Uri.parse("").path && this.right.path != Uri.parse("").path;
+        return this.left.path !== Uri.parse("").path && this.right.path !== Uri.parse("").path;
     }
 
     private async _stat(path: string): Promise<FileStat> {
@@ -96,11 +96,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         path = toUnix(path);
 
         if (right) {
-            path = path.replace(toUnix(this.right.fsPath), "")
+            path = path.replace(toUnix(this.right.fsPath), "");
         }
 
         if (left) {
-            path = path.replace(toUnix(this.left.fsPath), "")
+            path = path.replace(toUnix(this.left.fsPath), "");
         }
 
         return path.substring(1);
@@ -157,7 +157,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         childCache[rightSubpath] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
-                            directory == "" ? item.key : directory + path.posix.sep + item.key,
+                            directory === "" ? item.key : directory + path.posix.sep + item.key,
                             FileType.File,
                             item.content.status
                         );
@@ -169,9 +169,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         childCache[leftSubpath].status = Status.Modification;
                         break;
                     case Status.Rename:
-                        if (childCache[leftSubpath] != undefined) {
+                        if (childCache[leftSubpath] !== undefined) {
                             delete childCache[leftSubpath];
-                        } else if (childCache[rightSubpath] != undefined) {
+                        } else if (childCache[rightSubpath] !== undefined) {
                             childCache[rightSubpath] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
