@@ -21,9 +21,9 @@ export class FileSystemTrie {
     public add(path: string, content: any, intermediate: any): void {
         let node = this.root;
 
-        const keys: string[] = this.splitPath(path)
+        const keys: string[] = this.splitPath(path);
         for (const key of keys) {
-            if (node.children[key] == null) {
+            if (node.children[key] === null) {
                 node.children[key] = new FileSystemTrieNode(key, intermediate);
             }
 
@@ -38,7 +38,7 @@ export class FileSystemTrie {
 
         const keys: string[] = this.splitPath(path);
         for (const key of keys) {
-            if (node.children[key] == null) {
+            if (node.children[key] === null) {
                 return false;
             }
 

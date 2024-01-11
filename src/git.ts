@@ -46,7 +46,7 @@ export function stringToStatus(status: string) {
             return Status.rename;
         }
         default: {
-            return Status.null
+            return Status.null;
         }
     }
 }
@@ -61,7 +61,7 @@ export interface NameStatus {
 let cache = { 
     hash: createHash("md5").update("").digest("hex"),
     data: new FileSystemTrie(),
-}
+;}
 
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
@@ -73,7 +73,7 @@ export function diff(left: string, right: string): FileSystemTrie {
     }
     
     let newHash: string = createHash("md5").update(stdout).digest("hex");
-    if (newHash == cache.hash) {
+    if (newHash === cache.hash) {
         return cache.data;
     }
 
@@ -85,12 +85,12 @@ export function diff(left: string, right: string): FileSystemTrie {
     return parsed;
 }
 
-const name_status_regex: RegExp = /(?<status>[A-Z])(?<score>[0-9]*)\s+(?<left>[^\s]+)\s*(?<right>[^\s]*)/;
+const nameStatusRegex: RegExp = /(?<status>[A-Z])(?<score>[0-9]*)\s+(?<left>[^\s]+)\s*(?<right>[^\s]*)/;
 function parse(output: string, leftHi: string, rightHi: string): FileSystemTrie {
     let trie: FileSystemTrie = new FileSystemTrie();
 
     for (const line of output.split("\n")) {
-        const [_group, status, score, left, right] = name_status_regex.exec(line) || ["", "", "", "", ""];
+        const [_group, status, score, left, right] = nameStatusRegex.exec(line) || ["", "", "", "", ""];
 
         const leftSubpath: string = left.replace(rightHi, "").replace(leftHi, "");
         const rightSubpath: string = right.replace(rightHi, "");
