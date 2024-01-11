@@ -54,7 +54,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
                 decoration.propagate = true;
                 return decoration;
             }
-            case Status.Null: {
+            case Status.null: {
                 let decoration: vscode.FileDecoration = new vscode.FileDecoration("", "", new vscode.ThemeColor("folderComparison.color.ignored"));
                 decoration.propagate = true;
                 return decoration;

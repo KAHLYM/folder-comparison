@@ -46,7 +46,7 @@ export function stringToStatus(status: string) {
             return Status.rename;
         }
         default: {
-            return Status.Null
+            return Status.null
         }
     }
 }
@@ -95,7 +95,7 @@ function parse(output: string, leftHi: string, rightHi: string): FileSystemTrie 
         const leftSubpath: string = left.replace(rightHi, "").replace(leftHi, "");
         const rightSubpath: string = right.replace(rightHi, "");
 
-        const intermediate: NameStatus = { status: Status.Null, score: 0, left: "", right: "" };
+        const intermediate: NameStatus = { status: Status.null, score: 0, left: "", right: "" };
         switch (status) {
             case 'A':
                 trie.add(leftSubpath, { status: Status.addition, score: 0, left: "", right: left }, intermediate);

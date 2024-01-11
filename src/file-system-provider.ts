@@ -122,7 +122,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         Uri.parse(""),
                         name,
                         type,
-                        Status.Null);
+                        Status.null);
                 }
             });
         } else { // getChildren called against subdirectory
@@ -138,7 +138,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             Uri.parse(""),
                             toUnix(namepath),
                             type,
-                            Status.Null);
+                            Status.null);
                         }
                 });
             }
@@ -181,7 +181,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             );
                         }
                         break;
-                    case Status.Null:
+                    case Status.null:
                         if (childCache[item.key] === undefined) {
                             childCache[item.key] = new FileTreeItem(
                                 item.content.left,
@@ -272,7 +272,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         this.getRightUri(element),
                     ]
                 };
-            case Status.Null:
+            case Status.null:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
