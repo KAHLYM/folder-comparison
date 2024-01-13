@@ -12,6 +12,10 @@ export class FileSystemTrieNode {
 export class FileSystemTrie {
     protected root: FileSystemTrieNode = new FileSystemTrieNode("", null);
 
+    public getRoot(): FileSystemTrieNode {
+        return this.root;
+    }
+
     constructor() { }
 
     protected splitPath(path: string): string[] {
@@ -23,7 +27,7 @@ export class FileSystemTrie {
 
         const keys: string[] = this.splitPath(path);
         for (const key of keys) {
-            if (node.children[key] === null) {
+            if (node.children[key] === undefined) {
                 node.children[key] = new FileSystemTrieNode(key, intermediate);
             }
 
