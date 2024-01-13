@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as utilities from './utilities';
-import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode'
+import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode';
 import { diff, Status, statusToString } from './git';
 import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
@@ -61,7 +61,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     private isValid(): boolean {
         // TODO Fix Uri implementation in regards to consistency
-        return this.left.path != Uri.parse("").path && this.right.path != Uri.parse("").path;
+        return this.left.path !== Uri.parse("").path && this.right.path !== Uri.parse("").path;
     }
 
     private async _stat(path: string): Promise<FileStat> {
@@ -96,11 +96,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         path = toUnix(path);
 
         if (right) {
-            path = path.replace(toUnix(this.right.fsPath), "")
+            path = path.replace(toUnix(this.right.fsPath), "");
         }
 
         if (left) {
-            path = path.replace(toUnix(this.left.fsPath), "")
+            path = path.replace(toUnix(this.left.fsPath), "");
         }
 
         return path.substring(1);
@@ -122,7 +122,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         Uri.parse(""),
                         name,
                         type,
-                        Status.Null);
+                        Status.null);
                 }
             });
         } else { // getChildren called against subdirectory
@@ -138,7 +138,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             Uri.parse(""),
                             toUnix(namepath),
                             type,
-                            Status.Null);
+                            Status.null);
                         }
                 });
             }
@@ -153,25 +153,25 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 const rightSubpath: string = this.removePrefix(item.content.right, false, true);
 
                 switch (item.content.status) {
-                    case Status.Addition:
+                    case Status.addition:
                         childCache[rightSubpath] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
-                            directory == "" ? item.key : directory + path.posix.sep + item.key,
+                            directory === "" ? item.key : directory + path.posix.sep + item.key,
                             FileType.File,
                             item.content.status
                         );
                         break;
-                    case Status.Deletion:
-                        childCache[leftSubpath].status = Status.Deletion;
+                    case Status.deletion:
+                        childCache[leftSubpath].status = Status.deletion;
                         break;
-                    case Status.Modification:
-                        childCache[leftSubpath].status = Status.Modification;
+                    case Status.modification:
+                        childCache[leftSubpath].status = Status.modification;
                         break;
-                    case Status.Rename:
-                        if (childCache[leftSubpath] != undefined) {
+                    case Status.rename:
+                        if (childCache[leftSubpath] !== undefined) {
                             delete childCache[leftSubpath];
-                        } else if (childCache[rightSubpath] != undefined) {
+                        } else if (childCache[rightSubpath] !== undefined) {
                             childCache[rightSubpath] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
@@ -181,12 +181,12 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             );
                         }
                         break;
-                    case Status.Null:
-                        if (childCache[item.key] == undefined) {
+                    case Status.null:
+                        if (childCache[item.key] === undefined) {
                             childCache[item.key] = new FileTreeItem(
                                 item.content.left,
                                 item.content.right,
-                                directory == "" ? item.key : directory + path.posix.sep + item.key,
+                                directory === "" ? item.key : directory + path.posix.sep + item.key,
                                 FileType.Directory,
                                 item.content.status
                             );
@@ -233,28 +233,28 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     private getRightUri(element: FileTreeItem): Uri {
-        return Uri.file(this.right.path.substring(1) + path.posix.sep + element?.subpath)
+        return Uri.file(this.right.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
     private getCommand(element: FileTreeItem): Command | void {
         switch (element.status) {
-            case Status.Addition:
+            case Status.addition:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getRightUri(element)
                     ]
-                }
-            case Status.Deletion:
+                };
+            case Status.deletion:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getLeftUri(element)
                     ]
-                }
-            case Status.Modification:
+                };
+            case Status.modification:
                 return {
                     command: 'vscode.diff',
                     title: 'Open',
@@ -263,23 +263,23 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         this.getRightUri(element),
                         element.subpath + " (Modified)"
                     ]
-                }
-            case Status.Rename:
+                };
+            case Status.rename:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getRightUri(element),
                     ]
-                }
-            case Status.Null:
+                };
+            case Status.null:
                 return {
                     command: 'vscode.open',
                     title: 'Open',
                     arguments: [
                         this.getLeftUri(element),
                     ]
-                }
+                };
         }
     }
 }

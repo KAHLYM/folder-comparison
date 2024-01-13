@@ -3,16 +3,16 @@ import { window } from 'vscode';
 export namespace logger {
 
     export enum Level {
-        Trace = 1,
-        Debug,
-        Info,
-        Warning,
-        Error,
-        Fatal,
+        trace = 1,
+        debug,
+        info,
+        warning,
+        error,
+        fatal,
     }
 
-    const _defaultLevel = Level.Info;
-    export const DefaultLevel: string = enumToString(_defaultLevel);
+    const _defaultLevel = Level.info;
+    export const defaultLevel: string = enumToString(_defaultLevel);
 
     let _level: Level = _defaultLevel;
     export function setLogLevel(level: string) {
@@ -23,17 +23,17 @@ export namespace logger {
 
     function enumToString(level: Level): string {
         switch (level) {
-            case Level.Trace:
+            case Level.trace:
                 return "T";
-            case Level.Debug:
+            case Level.debug:
                 return "D";
-            case Level.Info:
+            case Level.info:
                 return "I";
-            case Level.Warning:
+            case Level.warning:
                 return "W";
-            case Level.Error:
+            case Level.error:
                 return "E";
-            case Level.Fatal:
+            case Level.fatal:
                 return "F";
         }
     }
@@ -41,19 +41,19 @@ export namespace logger {
     function stringToEnum(level: string): Level {
         switch (level) {
             case "Trace":
-                return Level.Trace;
+                return Level.trace;
             case "Debug":
-                return Level.Debug;
+                return Level.debug;
             case "Info":
-                return Level.Info;
+                return Level.info;
             case "Warning":
-                return Level.Warning;
+                return Level.warning;
             case "Error":
-                return Level.Error;
+                return Level.error;
             case "Fatal":
-                return Level.Fatal;
+                return Level.fatal;
             default:
-                return Level.Info;
+                return Level.info;
         }
     }
 
@@ -64,26 +64,26 @@ export namespace logger {
     }
 
     export function trace(message: string): void {
-        log(Level.Trace, message);
+        log(Level.trace, message);
     }
 
     export function debug(message: string): void {
-        log(Level.Debug, message);
+        log(Level.debug, message);
     }
 
     export function info(message: string): void {
-        log(Level.Info, message);
+        log(Level.info, message);
     }
 
     export function warning(message: string): void {
-        log(Level.Warning, message);
+        log(Level.warning, message);
     }
 
     export function error(message: string): void {
-        log(Level.Error, message);
+        log(Level.error, message);
     }
 
     export function fatal(message: string): void {
-        log(Level.Fatal, message);
+        log(Level.fatal, message);
     }
 }

@@ -109,13 +109,13 @@ export function activate(context: vscode.ExtensionContext) {
 			clearInterval(refreshInterval);
 			refreshInterval = setRefreshInterval();
 		} else if (event.affectsConfiguration("folderComparison.logLevel")) {
-			const logLevel = vscode.workspace.getConfiguration('folderComparison').get<string>('logLevel') ?? logger.DefaultLevel;
+			const logLevel = vscode.workspace.getConfiguration('folderComparison').get<string>('logLevel') ?? logger.defaultLevel;
 			logger.info(`User configured log level to be ${logLevel}`);
 			logger.setLogLevel(logLevel);
 		} else if (event.affectsConfiguration("folderComparison.showUnchanged")) {
 			fileSystemProvider.refresh();
 		}
-	})
+	});
 }
 
 async function warnAboutMissingGit(): Promise<void> {

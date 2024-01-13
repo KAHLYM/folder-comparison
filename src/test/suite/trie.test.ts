@@ -2,9 +2,8 @@ import * as assert from 'assert';
 import { FileSystemTrie, FileSystemTrieNode } from '../../trie';
 
 class MockFileSystemTrie extends FileSystemTrie {
-    public getRoot(): FileSystemTrieNode {
-        return super.root;
-    }
+      
+    public root: FileSystemTrieNode = super.getRoot();
 
     public splitPath(path: string): string[] {
         return super.splitPath(path);
@@ -117,10 +116,10 @@ suite('trie', () => {
             let trie: MockFileSystemTrie = new MockFileSystemTrie();
 
             const root: FileSystemTrieNode = trie.getRoot();
-            assert.equal("", root.key)
-            assert.equal(null, context)
+            assert.equal("", root.key);
+            assert.equal(null, context);
         });
-    })
+    });
 
     suite('splitPath function', () => {
 
