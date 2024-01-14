@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: 18.x
     - run: npm install
-    - run: xvfb-run -a npm run test
+    - run: xvfb-run -a npm run test:electron
       if: runner.os == 'Linux'
-    - run: npm run test
+    - run: npm run test:electron
       if: runner.os != 'Linux'
