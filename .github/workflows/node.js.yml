@@ -22,5 +22,5 @@ jobs:
     - run: npm install
     - run: xvfb-run -a npm test
       if: runner.os == 'Linux'
-    - run: npm test
+    - run: npm test-electron
       if: runner.os != 'Linux'
