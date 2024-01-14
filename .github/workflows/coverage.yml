@@ -1,4 +1,4 @@
-name: Node.js
+name: Coverage
 
 on:
   push:
@@ -8,10 +8,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -20,7 +17,4 @@ jobs:
       with:
         node-version: 18.x
     - run: npm install
-    - run: xvfb-run -a npm run test
-      if: runner.os == 'Linux'
-    - run: npm run test
-      if: runner.os != 'Linux'
+    - run: npm run coverage
