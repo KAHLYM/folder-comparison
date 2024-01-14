@@ -252,8 +252,6 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test-electron": "node ./out/test/runTest.js",
-    "test-mocha": "mocha --require ts-node/register --exclude src/test/suite/extension.test.ts --ui tdd src/test/**/*.test.ts",
-    "coverage": "c8 --check-coverage npm run test-mocha"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
@@ -262,14 +260,12 @@
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "@vscode/test-electron": "^2.3.8",
-    "c8": "^9.1.0",
     "eslint": "^8.47.0",
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@vscode/extension-telemetry": "^0.9.0",
-    "ts-node": "^10.9.2"
+    "@vscode/extension-telemetry": "^0.9.0"
   }
 }
