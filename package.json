@@ -253,9 +253,10 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "mocha": "mocha --require ts-node/register --exclude src/test/suite/extension.test.ts --ui tdd src/test/**/*.test.ts",
-    "coverage": "c8 --check-coverage --lines 0 --functions 0 --branches 0 --statements 0 npm run mocha"
+    "coverage": "nyc --check-coverage --lines 0 --functions 0 --branches 0 --statements 0 npm run mocha"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
     "@types/vscode": "^1.82.0",
@@ -265,6 +266,7 @@
     "eslint": "^8.47.0",
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
