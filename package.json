@@ -254,7 +254,7 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "coverage": "c8 --clean npm run test"
+    "coverage": "c8 --check-coverage --lines 0 --functions 0 --branches 0 --statements 0 npm run test"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.1",
