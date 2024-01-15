@@ -248,7 +248,9 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "webpack --mode production",
+    "compile-dev": "webpack --mode development",
     "watch": "webpack --mode production --watch --progress",
+    "watch-dev": "webpack --mode development --watch --progress",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
