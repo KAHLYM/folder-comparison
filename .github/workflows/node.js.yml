@@ -34,4 +34,4 @@ jobs:
       with:
         node-version: 18.x
     - run: npm install
-    - run: xvfb-run -a npm coverage
+    - run: xvfb-run -a npm run coverage
