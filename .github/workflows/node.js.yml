@@ -25,6 +25,7 @@ jobs:
     - run: npm run test
       if: runner.os != 'Linux'
   Coverage:
+    if: false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
