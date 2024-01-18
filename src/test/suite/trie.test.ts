@@ -146,13 +146,14 @@ suite('trie', () => {
         const path: string = "foo/bar/baz.txt";
         trie.add(path, null, { });
         [
-            { exists: false, path: "" },
+            { exists: true, path: "" },
             { exists: true, path: "foo" },
             { exists: true, path: "foo/bar" },
             { exists: true, path: "foo/bar/baz.txt" },
+            { exists: false, path: "foo/baz/bar.txt" },
             { exists: false, path: "baz.txt" }
         ].forEach(function (item) {
-            test.skip("given '" + path + "' returns " + item.exists.toString() + " when passed '" + item.path + "'", function () {
+            test("given '" + path + "' returns " + item.exists.toString() + " when passed '" + item.path + "'", function () {
                 assert.equal(item.exists, trie.exists(item.path));
             });
         });
