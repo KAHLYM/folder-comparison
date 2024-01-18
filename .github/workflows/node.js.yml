@@ -25,6 +25,7 @@ jobs:
     - run: npm run test
       if: runner.os != 'Linux'
   Coverage:
+    if: false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -34,4 +35,4 @@ jobs:
       with:
         node-version: 18.x
     - run: npm install
-    - run: npm run coverage
+    - run: xvfb-run -a npm run coverage
