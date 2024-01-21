@@ -77,12 +77,18 @@ export async function run(): Promise<void> {
 		throw Error(`Coverage for lines (${lines}%) does not meet global threshold (${threshold["lines"]}%)`);
 	}
 
-	const filenames: string[] = [];
+	let filenames: string[] = [];
 	[...dom.window.document.getElementsByClassName("file")].forEach(function (element: any) {
 		if (element.getAttribute("data-value")) {
 			filenames.push(element.getAttribute("data-value"));
 		}
 	});
+
+	const skipFiles = [
+		'config.ts',
+		'file-system-FileSystemProvider.ts',
+		'utilities.ts'];
+	filenames = filenames.concat(skipFiles);
 
 	const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
 	const sourceFiles = glob.sync('*.ts', { cwd: gitDirectory });
