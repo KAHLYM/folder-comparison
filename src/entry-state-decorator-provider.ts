@@ -1,13 +1,9 @@
 import * as vscode from 'vscode';
 import { Status, stringToStatus } from './git';
 
-export function createNode(identifier: string): vscode.Uri {
-    return vscode.Uri.parse(`Node:${identifier}`);
-}
-
 export class EntryStateDecorationProvider implements vscode.FileDecorationProvider {
 
-    private _disposables: vscode.Disposable[] = [];
+    public _disposables: vscode.Disposable[] = [];
 
     private readonly _onDidChangeDecorations = new vscode.EventEmitter<vscode.Uri | vscode.Uri[]>();
     readonly onDidChangeFileDecorations: vscode.Event<vscode.Uri | vscode.Uri[]> = this._onDidChangeDecorations.event;
@@ -28,7 +24,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
         this._onDidChangeDecorations.fire([uri]);
     }
 
-    async provideFileDecoration(uri: vscode.Uri) {
+    async provideFileDecoration(uri: vscode.Uri): Promise<vscode.FileDecoration | null>{
         if (uri.scheme !== "file-comparison") {
             return null;
         }
@@ -59,13 +55,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
                 decoration.propagate = true;
                 return decoration;
             }
-            default: {
-                break;
-            }
         }
-
-        return null;
-
     }
 
     dispose() {
