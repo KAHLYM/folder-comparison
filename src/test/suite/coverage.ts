@@ -87,8 +87,7 @@ export async function run(): Promise<void> {
 	const skipFiles = [
 		'config.ts',
 		'extension.ts',
-		'file-system-provider.ts',
-		'utilities.ts'];
+		'file-system-provider.ts'];
 	filenames = filenames.concat(skipFiles);
 
 	const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
