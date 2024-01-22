@@ -94,7 +94,7 @@ export async function run(): Promise<void> {
 	const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
 	const sourceFiles = glob.sync('*.ts', { cwd: gitDirectory });
 	const untestedFiles = sourceFiles.filter((file) => !filenames.includes(file));
-	if (untestedFiles) {
+	if (0 < untestedFiles.length) {
 		throw Error(`Coverage does not exist for ${untestedFiles.join(', ')}`);
 	}
 }
