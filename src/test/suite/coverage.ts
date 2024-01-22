@@ -86,7 +86,8 @@ export async function run(): Promise<void> {
 
 	const skipFiles = [
 		'config.ts',
-		'file-system-FileSystemProvider.ts',
+		'extension.ts',
+		'file-system-provider.ts',
 		'utilities.ts'];
 	filenames = filenames.concat(skipFiles);
 
