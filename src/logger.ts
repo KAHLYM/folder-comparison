@@ -57,32 +57,39 @@ export namespace logger {
         }
     }
 
+    /* istanbul ignore next: difficult to unit test */
     function log(level: Level, message: string): void {
         if (_level <= level) {
             _channel.appendLine(`${new Date().toISOString()} ${_enumToString(level)} ${message}`);
         }
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function trace(message: string): void {
         log(Level.trace, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function debug(message: string): void {
         log(Level.debug, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function info(message: string): void {
         log(Level.info, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function warning(message: string): void {
         log(Level.warning, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function error(message: string): void {
         log(Level.error, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function fatal(message: string): void {
         log(Level.fatal, message);
     }

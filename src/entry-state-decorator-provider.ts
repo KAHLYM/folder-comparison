@@ -20,6 +20,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
         return this._getStatus(uri);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     async updateFileDecoration(uri: vscode.Uri): Promise<void> {
         this._onDidChangeDecorations.fire([uri]);
     }
@@ -58,6 +59,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
         }
     }
 
+    /* istanbul ignore next: difficult to unit test */
     dispose() {
         this._disposables.forEach(dispose => dispose.dispose());
     }
