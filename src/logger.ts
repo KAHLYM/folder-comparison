@@ -12,16 +12,16 @@ export namespace logger {
     }
 
     const _defaultLevel = Level.info;
-    export const defaultLevel: string = enumToString(_defaultLevel);
+    export const defaultLevel: string = _enumToString(_defaultLevel);
 
-    let _level: Level = _defaultLevel;
+    export let _level: Level = _defaultLevel;
     export function setLogLevel(level: string) {
-        _level = stringToEnum(level);
+        _level = _stringToEnum(level);
     }
 
     let _channel = window.createOutputChannel("Folder Comparison");
 
-    function enumToString(level: Level): string {
+    export function _enumToString(level: Level): string {
         switch (level) {
             case Level.trace:
                 return "T";
@@ -38,7 +38,7 @@ export namespace logger {
         }
     }
 
-    function stringToEnum(level: string): Level {
+    export function _stringToEnum(level: string): Level {
         switch (level) {
             case "Trace":
                 return Level.trace;
@@ -57,32 +57,39 @@ export namespace logger {
         }
     }
 
+    /* istanbul ignore next: difficult to unit test */
     function log(level: Level, message: string): void {
         if (_level <= level) {
-            _channel.appendLine(`${new Date().toISOString()} ${enumToString(level)} ${message}`);
+            _channel.appendLine(`${new Date().toISOString()} ${_enumToString(level)} ${message}`);
         }
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function trace(message: string): void {
         log(Level.trace, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function debug(message: string): void {
         log(Level.debug, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function info(message: string): void {
         log(Level.info, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function warning(message: string): void {
         log(Level.warning, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function error(message: string): void {
         log(Level.error, message);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     export function fatal(message: string): void {
         log(Level.fatal, message);
     }

@@ -42,7 +42,7 @@ export class FileSystemTrie {
 
         const keys: string[] = this.splitPath(path);
         for (const key of keys) {
-            if (node.children[key] === null) {
+            if (node.children[key] === undefined) {
                 return false;
             }
 
