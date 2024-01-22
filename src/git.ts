@@ -58,7 +58,7 @@ export interface NameStatus {
     right: string;
 }
 
-let cache = { 
+export let cache = { 
     hash: createHash("md5").update("").digest("hex"),
     data: new FileSystemTrie(),
 };
@@ -86,7 +86,7 @@ export function diff(left: string, right: string): FileSystemTrie {
 }
 
 const nameStatusRegex: RegExp = /(?<status>[A-Z])(?<score>[0-9]*)\s+(?<left>[^\s]+)\s*(?<right>[^\s]*)/;
-function parse(output: string, leftHi: string, rightHi: string): FileSystemTrie {
+export function parse(output: string, leftHi: string, rightHi: string): FileSystemTrie {
     let trie: FileSystemTrie = new FileSystemTrie();
 
     for (const line of output.split("\n")) {
