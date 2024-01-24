@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { Status, stringToStatus } from './git';
+import { Status } from './git/extract';
+import { getTranslationByString } from './git/translation';
 
 export class EntryStateDecorationProvider implements vscode.FileDecorationProvider {
 
@@ -13,7 +14,7 @@ export class EntryStateDecorationProvider implements vscode.FileDecorationProvid
     }
 
     async _getStatus(uri: vscode.Uri): Promise<Status> {
-        return stringToStatus(uri.query);
+        return getTranslationByString(uri.query).status;
     }
 
     private getStatus(uri: vscode.Uri): Status | Thenable<Status> {
