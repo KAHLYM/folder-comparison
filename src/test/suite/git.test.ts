@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as git from '../../git/extract';
-import { FileSystemTrie } from '../../trie';
+import { FileSystemTrie } from '../../data-structures/trie';
 
 suite('git', () => {
 

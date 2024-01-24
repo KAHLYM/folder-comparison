@@ -1,8 +1,8 @@
 import { execSync } from 'child_process';
-import { FileSystemTrie } from '../trie';
+import { FileSystemTrie } from '../data-structures/trie';
 import { workspace } from 'vscode';
 import { getTranslationByAbbreviation } from './translation';
-import { Cache } from './cache';
+import { Cache } from '../data-structures/cache';
 
 export enum Status {
     addition,

@@ -3,7 +3,7 @@ import * as utilities from './utilities';
 import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode';
 import { diff, Status } from './git/extract';
 import { getTranslationByEnum } from './git/translation';
-import { FileSystemTrie, FileSystemTrieNode } from './trie';
+import { FileSystemTrie, FileSystemTrieNode } from './data-structures/trie';
 
 export function toUnix(filepath: string): string {
     return filepath.split(path.sep).join(path.posix.sep);
