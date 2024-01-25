@@ -14,7 +14,7 @@ export async function run(): Promise<void> {
 		hookRunInContext: true,
 		hookRunInThisContext: true,
 		include: ["out/**/*.js"],
-		exclude: ["out/test/**"],
+		exclude: ["out/test/**", "out/**/*.test.js"],
 		require: ['ts-node/register', 'source-map-support/register'],
 	});
 	await nyc.reset();
@@ -31,9 +31,9 @@ export async function run(): Promise<void> {
 		color: true
 	});
 
-	const testsRoot = path.resolve(__dirname, '..');
-	const testFiles = glob.sync('**/*.test.js', { cwd: testsRoot });
-	testFiles.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+	const srcRoot = path.resolve(__dirname, '..', '..');
+	const testFiles = glob.sync('**/*.test.js', { cwd: srcRoot });
+	testFiles.forEach(f => mocha.addFile(path.resolve(srcRoot, f)));
 
 	await new Promise(resolve => mocha.run(resolve));
 	await nyc.writeCoverageFile();
