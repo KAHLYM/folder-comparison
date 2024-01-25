@@ -1,15 +1,16 @@
 import * as path from 'path';
 import * as utilities from './utilities';
 import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode';
-import { diff, Status, statusToString } from './git';
-import { FileSystemTrie, FileSystemTrieNode } from './trie';
+import { diff, Status } from './git/extract';
+import { getTranslationByEnum } from './git/translation';
+import { FileSystemTrie, FileSystemTrieNode } from './data-structures/trie';
 
 export function toUnix(filepath: string): string {
     return filepath.split(path.sep).join(path.posix.sep);
 }
 
 export function makeUri(filepath: string, status: Status): Uri {
-    return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + statusToString(status));
+    return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
 }
 
 export class FileTreeItem extends TreeItem {

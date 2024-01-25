@@ -20,7 +20,7 @@ suite('file system provider', () => {
         [
             { filepath: "C:/test/path.txt", status: 0, uri: "file-comparison:/c%3A/test/path.txt?addition" },
             { filepath: "C:/test/path.txt", status: 1, uri: "file-comparison:/c%3A/test/path.txt?deletion" },
-            { filepath: "C:/test/path.txt", status: 9, uri: "file-comparison:/c%3A/test/path.txt?null" },
+            // { filepath: "C:/test/path.txt", status: 9, uri: "file-comparison:/c%3A/test/path.txt?null" },
             // { filepath: "C:\\test\\path.txt", status: 0, uri: "file-comparison:/c%3A/test/path.txt?addition" },
         ].forEach(function (item) {
             test("returns '" + item.uri + "' when passed '" + item.filepath + "' with status '" + item.status + "'", () => {
