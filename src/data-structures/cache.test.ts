@@ -28,8 +28,8 @@ suite('cache', () => {
             { data: "test string" },
         ].forEach(function (item) {
             test("returns hexidecimal hash given '" + item.data + "'", async () => {
-            assert.equal(true, isHex(Cache._makeHash(item.data)));
-        });
+                assert.equal(true, isHex(Cache._makeHash(item.data)));
+            });
         });
     });
 
