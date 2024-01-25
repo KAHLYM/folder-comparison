@@ -9,7 +9,7 @@ export async function run(): Promise<void> {
 	const NYC = require('nyc');
 	const nyc = new NYC({
 		cwd: cwd,
-		reporter: ['text', 'html'],
+		reporter: ['text', 'html', 'json-summary'],
 		hookRequire: true,
 		hookRunInContext: true,
 		hookRunInThisContext: true,
@@ -50,49 +50,50 @@ export async function run(): Promise<void> {
 		"statements": 90
 	};
 
-	const fs = require("fs");
-	const data = fs.readFileSync(path.join(cwd, 'coverage', 'index.html'), 'utf8');
+	const fs = require('fs');
+	fs.readFile(path.join(cwd, 'coverage', 'coverage-summary.html'), 'utf8', function (err: any, data: any) {
+		if (err) {
+			throw err;
+		}
+		const obj = JSON.parse(data);
 
-	const jsdom = require("jsdom");
-	const { JSDOM } = jsdom;
-	const dom = new JSDOM(data);
+		const statements: number = parseInt(obj["total"]["statements"]["pct"]);
+		if (statements < threshold["statements"]) {
+			throw Error(`Coverage for statements (${statements}%) does not meet global threshold (${threshold["statements"]}%)`);
+		}
 
-	const statements: number = parseInt(dom.window.document.querySelector("body > div.wrapper > div:nth-child(1) > div.clearfix > div:nth-child(1) > span.strong").textContent.split("%")[0]);
-	if (statements < threshold["statements"]) {
-		throw Error(`Coverage for statements (${statements}%) does not meet global threshold (${threshold["statements"]}%)`);
-	}
+		const branches: number = parseInt(obj["total"]["branches"]["pct"]);
+		if (branches < threshold["branches"]) {
+			throw Error(`Coverage for branches (${branches}%) does not meet global threshold (${threshold["branches"]}%)`);
+		}
 
-	const branches: number = parseInt(dom.window.document.querySelector("body > div.wrapper > div:nth-child(1) > div.clearfix > div:nth-child(2) > span.strong").textContent.split("%")[0]);
-	if (branches < threshold["branches"]) {
-		throw Error(`Coverage for branches (${branches}%) does not meet global threshold (${threshold["branches"]}%)`);
-	}
+		const functions: number = parseInt(obj["total"]["functions"]["pct"]);
+		if (functions < threshold["functions"]) {
+			throw Error(`Coverage for functions (${functions}%) does not meet global threshold (${threshold["functions"]}%)`);
+		}
 
-	const functions: number = parseInt(dom.window.document.querySelector("body > div.wrapper > div:nth-child(1) > div.clearfix > div:nth-child(3) > span.strong").textContent.split("%")[0]);
-	if (functions < threshold["functions"]) {
-		throw Error(`Coverage for functions (${functions}%) does not meet global threshold (${threshold["functions"]}%)`);
-	}
+		const lines: number = parseInt(obj["total"]["lines"]["pct"]);
+		if (lines < threshold["lines"]) {
+			throw Error(`Coverage for lines (${lines}%) does not meet global threshold (${threshold["lines"]}%)`);
+		}
 
-	const lines: number = parseInt(dom.window.document.querySelector("body > div.wrapper > div:nth-child(1) > div.clearfix > div:nth-child(4) > span.strong").textContent.split("%")[0]);
-	if (lines < threshold["lines"]) {
-		throw Error(`Coverage for lines (${lines}%) does not meet global threshold (${threshold["lines"]}%)`);
-	}
+		let filenames: string[] = [];
+		Object.keys(obj).forEach(function(key) {
+			if (key.endsWith(".ts")) {
+				filenames.push(key.split("\\").slice(-1)[0]);
+			}
+		});
 
-	let filenames: string[] = [];
-	[...dom.window.document.getElementsByClassName("file")].forEach(function (element: any) {
-		if (element.getAttribute("data-value")) {
-			filenames.push(element.getAttribute("data-value"));
+		const skipFiles = [
+			'config.ts',
+			'extension.ts'];
+		filenames = filenames.concat(skipFiles);
+
+		const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
+		const sourceFiles = glob.sync('*.ts', { cwd: gitDirectory });
+		const untestedFiles = sourceFiles.filter((file) => !filenames.includes(file));
+		if (0 < untestedFiles.length) {
+			throw Error(`Coverage does not exist for ${untestedFiles.join(', ')}`);
 		}
 	});
-
-	const skipFiles = [
-		'config.ts',
-		'extension.ts'];
-	filenames = filenames.concat(skipFiles);
-
-	const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
-	const sourceFiles = glob.sync('*.ts', { cwd: gitDirectory });
-	const untestedFiles = sourceFiles.filter((file) => !filenames.includes(file));
-	if (0 < untestedFiles.length) {
-		throw Error(`Coverage does not exist for ${untestedFiles.join(', ')}`);
-	}
 }
