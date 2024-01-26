@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import * as fsp from './file-system-provider';
-import * as esdp from './entry-state-decorator-provider';
+import * as fsp from './tree-view/tree-data-provider';
+import * as esdp from './tree-view/file-decroation-provider';
 import { execSync } from 'child_process';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { isProduction } from './config';

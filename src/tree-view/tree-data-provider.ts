@@ -1,38 +1,10 @@
+import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
+import { diff, Status, } from '../git/extract';
+import { FileTreeItem } from './tree-item';
+import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
+import * as utilities from '../utilities';
 import * as path from 'path';
-import * as utilities from './utilities';
-import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode';
-import { diff, Status } from './git/extract';
-import { getTranslationByEnum } from './git/translation';
-import { FileSystemTrie, FileSystemTrieNode } from './data-structures/trie';
-
-export function toUnix(filepath: string): string {
-    return filepath.split(path.sep).join(path.posix.sep);
-}
-
-export function makeUri(filepath: string, status: Status): Uri {
-    return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
-}
-
-export class FileTreeItem extends TreeItem {
-    public left: Uri;
-    public right: Uri;
-    private _subpath: Uri;
-    public filetype: FileType;
-    public status: Status;
-
-    constructor(left: Uri, right: Uri, path: string, filetype: FileType, status: Status) {
-        super(path);
-        this.left = left;
-        this.right = right;
-        this._subpath = makeUri(path, status);
-        this.filetype = filetype;
-        this.status = status;
-    }
-
-    get subpath(): string {
-        return toUnix(this._subpath.path).substring(1);
-    }
-}
+import { toUnix, makeUri } from '../utilities';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 

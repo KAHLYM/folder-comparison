@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { EntryStateDecorationProvider } from '../../entry-state-decorator-provider';
+import { EntryStateDecorationProvider } from '../../tree-view/file-decroation-provider';
 import * as vscode from 'vscode';
 
 suite('entry state decorator provider', () => {
