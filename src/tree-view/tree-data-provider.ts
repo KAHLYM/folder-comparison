@@ -4,7 +4,7 @@ import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
 import { diff, Status, } from '../git/extract';
 import { FCUri } from '../internal/uri';
 import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
-import * as utilities from '../utilities';
+import * as utilities from '../utilities/file-system';
 import { toUnix } from '../utilities/path';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {

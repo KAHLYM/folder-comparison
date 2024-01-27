@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import * as assert from 'assert';
-import * as utilities from '../../utilities';
+import * as utilities from './file-system';
 
-suite('utilities', () => {
+suite('file system', () => {
 
     suite('massageError', () => {
         [

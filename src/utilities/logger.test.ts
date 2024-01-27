@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { logger } from '../../logger';
+import { logger } from './logger';
 
 suite('logger', () => {
 
