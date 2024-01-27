@@ -178,16 +178,17 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             }
         }
 
-        // Sort children by filetype and alphanumerically
-        let children: FileTreeItem[] = Object.values(childCache);
-        children.sort((a, b) => {
-            if (a.filetype === b.filetype && a.subpath && b.subpath) {
-                return a.subpath.localeCompare(b.subpath);
-            }
-            return a.filetype === FileType.Directory ? -1 : 1;
-        });
+        return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
+    }
 
-        return children;
+    public _sortByFileTypeAndAlphanumeric(elements: FileTreeItem[]): FileTreeItem[] {
+        elements.sort((left, right) => {
+            if (left.filetype === right.filetype && left.subpath && right.subpath) {
+                return left.subpath.localeCompare(right.subpath);
+            }
+            return left.filetype === FileType.Directory ? -1 : 1;
+        });
+        return elements;
     }
 
     public getTreeItem(element: FileTreeItem): TreeItem {
