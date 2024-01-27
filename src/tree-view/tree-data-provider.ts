@@ -190,23 +190,20 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return children;
     }
 
-    /* istanbul ignore next: TODO refactor */
     public getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: FCUri = new FCUri(element.subpath, element.status);
+        const uri: FCUri = new FCUri(element.subpath, element.status);
+        let treeItem = new TreeItem(uri.getUri());
         switch (element.filetype) {
             case FileType.File:
-                const treeItem = new TreeItem(resourceUri.getUri());
-                let command: Command | void = this._getCommand(element);
-                if (command) {
-                    treeItem.command = command;
-                }
+                treeItem.command = this._getCommand(element);
                 treeItem.contextValue = 'file';
-                return treeItem;
+                break;
             case FileType.Directory:
-                return new TreeItem(resourceUri.getUri(), this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
-            default:
-                return new TreeItem(resourceUri.getUri());
+                // if exists in cache then change has been made and directory should be expanded
+                treeItem.collapsibleState = this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
+                break;
         }
+        return treeItem;
     }
 
     public _getLeftUri(element: FileTreeItem): Uri {
@@ -217,7 +214,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return Uri.file(this.right_.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
-    public _getCommand(element: FileTreeItem): Command | void {
+    public _getCommand(element: FileTreeItem): Command {
         switch (element.status) {
             case Status.addition:
                 return {
