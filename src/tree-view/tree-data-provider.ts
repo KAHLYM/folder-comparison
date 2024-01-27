@@ -1,38 +1,11 @@
 import * as path from 'path';
-import * as utilities from './utilities';
-import { Command, Event, EventEmitter, TreeItem, Uri, FileType, TreeDataProvider, FileStat, TreeItemCollapsibleState, workspace } from 'vscode';
-import { diff, Status } from './git/extract';
-import { getTranslationByEnum } from './git/translation';
-import { FileSystemTrie, FileSystemTrieNode } from './data-structures/trie';
-
-export function toUnix(filepath: string): string {
-    return filepath.split(path.sep).join(path.posix.sep);
-}
-
-export function makeUri(filepath: string, status: Status): Uri {
-    return Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
-}
-
-export class FileTreeItem extends TreeItem {
-    public left: Uri;
-    public right: Uri;
-    private _subpath: Uri;
-    public filetype: FileType;
-    public status: Status;
-
-    constructor(left: Uri, right: Uri, path: string, filetype: FileType, status: Status) {
-        super(path);
-        this.left = left;
-        this.right = right;
-        this._subpath = makeUri(path, status);
-        this.filetype = filetype;
-        this.status = status;
-    }
-
-    get subpath(): string {
-        return toUnix(this._subpath.path).substring(1);
-    }
-}
+import { FileTreeItem } from './tree-item';
+import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
+import { diff, Status, } from '../git/extract';
+import { FCUri } from '../internal/uri';
+import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
+import * as utilities from '../utilities/file-system';
+import { toUnix } from '../utilities/path';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
@@ -219,10 +192,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     /* istanbul ignore next: TODO refactor */
     public getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: Uri = makeUri(element.subpath, element.status);
+        const resourceUri: FCUri = new FCUri(element.subpath, element.status);
         switch (element.filetype) {
             case FileType.File:
-                const treeItem = new TreeItem(resourceUri);
+                const treeItem = new TreeItem(resourceUri.getUri());
                 let command: Command | void = this._getCommand(element);
                 if (command) {
                     treeItem.command = command;
@@ -230,9 +203,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 treeItem.contextValue = 'file';
                 return treeItem;
             case FileType.Directory:
-                return new TreeItem(resourceUri, this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
+                return new TreeItem(resourceUri.getUri(), this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
             default:
-                return new TreeItem(resourceUri);
+                return new TreeItem(resourceUri.getUri());
         }
     }
 

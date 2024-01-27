@@ -1,10 +1,10 @@
 import * as assert from 'assert';
-import * as git from '../../git/extract';
-import { FileSystemTrie } from '../../data-structures/trie';
+import * as git from './extract';
+import { FileSystemTrie } from '../data-structures/trie';
 
-suite('git', () => {
+suite('extract', () => {
 
-    suite('parse', () => {
+    suite('_parse', () => {
         test("return empty trie if empty output", async () => {
             git._parse("", "", "");
             assert.equal(0, git.cache.get().getChildren(""));
