@@ -4,7 +4,7 @@ import * as glob from 'glob';
 
 
 export async function run(): Promise<void> {
-	const cwd = path.join(__dirname, '..', '..', '..');
+	const cwd = path.join(__dirname, '..', '..');
 
 	const NYC = require('nyc');
 	const nyc = new NYC({
@@ -31,7 +31,7 @@ export async function run(): Promise<void> {
 		color: true
 	});
 
-	const srcRoot = path.resolve(__dirname, '..', '..');
+	const srcRoot = path.resolve(__dirname, '..');
 	const testFiles = glob.sync('**/*.test.js', { cwd: srcRoot });
 	testFiles.forEach(f => mocha.addFile(path.resolve(srcRoot, f)));
 
