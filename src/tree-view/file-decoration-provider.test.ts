@@ -17,6 +17,7 @@ suite('file decoration provider', () => {
         { uri: "file-comparison://www.example.com/some/path?deletion#fragment", badge: "D", tooltip: "deletion", color: "folderComparison.color.deleted" },
         { uri: "file-comparison://www.example.com/some/path?modification#fragment", badge: "M", tooltip: "modification", color: "folderComparison.color.modified" },
         { uri: "file-comparison://www.example.com/some/path?rename#fragment", badge: "R", tooltip: "rename", color: "folderComparison.color.renamed" },
+        { uri: "file-comparison://www.example.com/some/path?null#fragment", badge: "", tooltip: "", color: "folderComparison.color.ignored" },
         { uri: "file-comparison://www.example.com/some/path?invalid#fragment", badge: "", tooltip: "", color: "folderComparison.color.ignored" },
     ].forEach(function (item) {
         test("returns expected file decoration when passed uri '" + item.uri + "'", async () => {

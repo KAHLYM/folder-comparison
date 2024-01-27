@@ -1,17 +1,5 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as path from 'path';
-import { getTranslationByEnum } from './git/translation';
-import { Status } from './git/extract';
-
-
-export function toUnix(filepath: string): string {
-    return filepath.split(path.sep).join(path.posix.sep);
-}
-
-export function makeUri(filepath: string, status: Status): vscode.Uri {
-    return vscode.Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
-}
 
 /* istanbul ignore next: difficult to unit test */
 function handleResult<T>(resolve: (result: T) => void, reject: (error: Error) => void, error: Error | null | undefined, result: T): void {

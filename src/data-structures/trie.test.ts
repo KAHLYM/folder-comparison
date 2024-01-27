@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { FileSystemTrie, FileSystemTrieNode } from '../../data-structures/trie';
+import { FileSystemTrie, FileSystemTrieNode } from './trie';
 
 class MockFileSystemTrie extends FileSystemTrie {
       

@@ -1,10 +1,11 @@
+import * as path from 'path';
+import { FileTreeItem } from './tree-item';
 import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
 import { diff, Status, } from '../git/extract';
-import { FileTreeItem } from './tree-item';
+import { FCUri } from '../internal/uri';
 import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
 import * as utilities from '../utilities';
-import * as path from 'path';
-import { toUnix, makeUri } from '../utilities';
+import { toUnix } from '../utilities/path';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
@@ -191,10 +192,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     /* istanbul ignore next: TODO refactor */
     public getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: Uri = makeUri(element.subpath, element.status);
+        const resourceUri: FCUri = new FCUri(element.subpath, element.status);
         switch (element.filetype) {
             case FileType.File:
-                const treeItem = new TreeItem(resourceUri);
+                const treeItem = new TreeItem(resourceUri.getUri());
                 let command: Command | void = this._getCommand(element);
                 if (command) {
                     treeItem.command = command;
@@ -202,9 +203,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 treeItem.contextValue = 'file';
                 return treeItem;
             case FileType.Directory:
-                return new TreeItem(resourceUri, this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
+                return new TreeItem(resourceUri.getUri(), this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
             default:
-                return new TreeItem(resourceUri);
+                return new TreeItem(resourceUri.getUri());
         }
     }
 
