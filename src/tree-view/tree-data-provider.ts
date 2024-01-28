@@ -31,11 +31,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public refresh(): void {
-        this.cache_ = this.isValid() ? diff(this.left_.fsPath, this.right_.fsPath) : new FileSystemTrie();
+        this.cache_ = this._isValid() ? diff(this.left_.fsPath, this.right_.fsPath) : new FileSystemTrie();
         this._onDidChangeTreeData.fire();
     }
 
-    public isValid(): boolean {
+    public _isValid(): boolean {
         // TODO Fix Uri implementation in regards to consistency
         return this.left_.path !== Uri.parse("").path && this.right_.path !== Uri.parse("").path;
     }
@@ -88,12 +88,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     public async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
-        if (!this.isValid()) {
-            return [];
+        if (this._isValid()) {
+            childCache = await this._getChildrenFromDisk(element, childCache);
+            childCache = this._getChildrenFromCache(element, childCache);
         }
-
-        childCache = await this._getChildrenFromDisk(element, childCache);
-        childCache = this._getChildrenFromCache(element, childCache);
 
         return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
     }
