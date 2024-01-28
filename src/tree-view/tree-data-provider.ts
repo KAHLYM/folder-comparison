@@ -85,7 +85,6 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return path.substring(1);
     }
 
-    /* istanbul ignore next: TODO refactor */
     public async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
@@ -93,6 +92,13 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             return [];
         }
 
+        childCache = await this._getChildrenFromDisk(element, childCache);
+        childCache = this._getChildrenFromCache(element, childCache);
+
+        return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
+    }
+
+    public async _getChildrenFromDisk(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Promise<Record<string, FileTreeItem>> {
         if (!element) { // getChildren called against root directory
             const children = await this.readDirectory(this.left_.fsPath);
             children.map(([name, type]) => {
@@ -119,12 +125,15 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             toUnix(namepath),
                             type,
                             Status.null);
-                        }
+                    }
                 });
             }
         }
 
-        // Get elements from cache
+        return childCache;
+    }
+
+    public _getChildrenFromCache(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Record<string, FileTreeItem> {
         const directory: string = element ? element.subpath : "";
         const items: FileSystemTrieNode[] = this.cache_.exists(directory) ? this.cache_.getChildren(directory) : [];
         for (const item of items) {
@@ -178,7 +187,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             }
         }
 
-        return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
+        return childCache;
     }
 
     public _sortByFileTypeAndAlphanumeric(elements: FileTreeItem[]): FileTreeItem[] {
