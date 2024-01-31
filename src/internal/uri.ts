@@ -3,7 +3,7 @@ import { getTranslationByEnum, getTranslationByString } from "../git/translation
 import { toUnix } from "../utilities/path";
 import { Uri } from "vscode";
 
-export class FCUri {
+export class UriEx {
     constructor(filepath: string, status: Status) {
         this._uri = Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
     }

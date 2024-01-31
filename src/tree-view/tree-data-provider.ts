@@ -2,7 +2,7 @@ import * as path from 'path';
 import { FileTreeItem } from './tree-item';
 import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
 import { diff, Status, } from '../git/extract';
-import { FCUri } from '../internal/uri';
+import { UriEx } from '../internal/uri';
 import { Command, Event, EventEmitter, FileType, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
 import { exists, readDirectory }from '../utilities/file-system';
 import { toUnix } from '../utilities/path';
@@ -156,7 +156,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public getTreeItem(element: FileTreeItem): TreeItem {
-        const uri: FCUri = new FCUri(element.subpath, element.status);
+        const uri: UriEx = new UriEx(element.subpath, element.status);
         let treeItem = new TreeItem(uri.getUri());
         switch (element.filetype) {
             case FileType.File:
