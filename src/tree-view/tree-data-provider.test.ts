@@ -34,7 +34,7 @@ suite('tree data provider', () => {
             const left: string = "";
             const right: string = "C:/test/right.txt";
             tdp_.update(Uri.parse(left), Uri.parse(right));
-            assert.equal(false, tdp_.isValid());
+            assert.equal(false, tdp_._isValid());
         });
 
         test("returns false when provided invalid right path", () => {
@@ -42,7 +42,7 @@ suite('tree data provider', () => {
             const left: string = "C:/test/left.txt";
             const right: string = "";
             tdp_.update(Uri.parse(left), Uri.parse(right));
-            assert.equal(false, tdp_.isValid());
+            assert.equal(false, tdp_._isValid());
         });
 
         test("returns true when provided valid left and right path", () => {
@@ -50,23 +50,7 @@ suite('tree data provider', () => {
             const left: string = "C:/test/left.txt";
             const right: string = "C:/test/right.txt";
             tdp_.update(Uri.parse(left), Uri.parse(right));
-            assert.equal(true, tdp_.isValid());
-        });
-    });
-
-    // TODO Check that removePrefix behaves as expected
-    suite('removePrefix', () => {
-        [
-            { path: "C:/test/path.txt", leftPath: "C:/test", left: false, rightPath: "C:/test", right: false, expected: ":/test/path.txt" },
-            { path: "C:/left/path.txt", leftPath: "C:/left", left: true, rightPath: "C:/test", right: false, expected: ":/path.txt" },
-            { path: "C:/right/path.txt", leftPath: "C:/test", left: false, rightPath: "C:/right", right: true, expected: ":/path.txt" },
-            { path: "C:/left/right/path.txt", leftPath: "C:/left", left: true, rightPath: "C:/left/right", right: true, expected: ":/path.txt" },
-        ].forEach(function (item) {
-            test("return expected path given left and right", () => {
-                const tdp_: FileSystemProvider = new FileSystemProvider();
-                tdp_.update(Uri.parse(item.leftPath), Uri.parse(item.rightPath));
-                assert.equal(item.expected, tdp_.removePrefix(item.path, item.left, item.right));
-            });
+            assert.equal(true, tdp_._isValid());
         });
     });
 

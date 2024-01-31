@@ -6,6 +6,7 @@ import { FCUri } from '../internal/uri';
 import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
 import * as utilities from '../utilities/file-system';
 import { toUnix } from '../utilities/path';
+import { removePrefixes } from '../utilities/string';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
@@ -71,20 +72,6 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return Promise.resolve(result);
     }
 
-    public removePrefix(path: string, left: boolean, right: boolean): string {
-        path = toUnix(path);
-
-        if (right) {
-            path = path.replace(toUnix(this.right_.fsPath), "");
-        }
-
-        if (left) {
-            path = path.replace(toUnix(this.left_.fsPath), "");
-        }
-
-        return path.substring(1);
-    }
-
     public async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
@@ -136,8 +123,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         const items: FileSystemTrieNode[] = this.cache_.exists(directory) ? this.cache_.getChildren(directory) : [];
         for (const item of items) {
             if (item.key && item.content) {
-                const leftSubpath: string = this.removePrefix(item.content.left, true, true);
-                const rightSubpath: string = this.removePrefix(item.content.right, false, true);
+                // Use .substring(1) to remove leading path seperator
+                const leftSubpath: string = removePrefixes(item.content.left, [this.right_.fsPath, this.left_.fsPath]).substring(1);
+                const rightSubpath: string = removePrefixes(item.content.right, [this.right_.fsPath]).substring(1);
 
                 switch (item.content.status) {
                     case Status.addition:
