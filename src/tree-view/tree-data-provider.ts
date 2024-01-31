@@ -3,8 +3,8 @@ import { FileTreeItem } from './tree-item';
 import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
 import { diff, Status, } from '../git/extract';
 import { FCUri } from '../internal/uri';
-import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
-import * as utilities from '../utilities/file-system';
+import { Command, Event, EventEmitter, FileType, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
+import { exists, readDirectory }from '../utilities/file-system';
 import { toUnix } from '../utilities/path';
 import { removePrefixes } from '../utilities/string';
 
@@ -41,37 +41,6 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return this.left_.path !== Uri.parse("").path && this.right_.path !== Uri.parse("").path;
     }
 
-    /* istanbul ignore next: not designed for unit test */
-    private async _stat(path: string): Promise<FileStat> {
-        return new utilities.FileStat(await utilities.stat(path));
-    }
-
-    public exists(path: string): boolean | Thenable<boolean> {
-        return this._exists(path);
-    }
-
-    /* istanbul ignore next: not designed for unit test */
-    private async _exists(path: string): Promise<boolean> {
-        return utilities.exists(path);
-    }
-
-    public readDirectory(directory: string): [string, FileType][] | Thenable<[string, FileType][]> {
-        return this._readDirectory(directory);
-    }
-
-    /* istanbul ignore next: not designed for unit test */
-    private async _readDirectory(directory: string): Promise<[string, FileType][]> {
-        const children = await utilities.readdir(directory);
-
-        const result: [string, FileType][] = [];
-        for (const child of children) {
-            const stat = await this._stat(path.join(directory, child));
-            result.push([child, stat.type]);
-        }
-
-        return Promise.resolve(result);
-    }
-
     public async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
@@ -85,7 +54,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     public async _getChildrenFromDisk(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Promise<Record<string, FileTreeItem>> {
         if (!element) { // getChildren called against root directory
-            const children = await this.readDirectory(this.left_.fsPath);
+            const children = await readDirectory(this.left_.fsPath);
             children.map(([name, type]) => {
                 if (this.cache_.exists(toUnix(name)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
                     childCache[toUnix(name)] = new FileTreeItem(
@@ -98,9 +67,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             });
         } else { // getChildren called against subdirectory
             const subdirectory = path.join(this.left_.fsPath, element.subpath);
-            const exists = await this.exists(subdirectory);
-            if (exists) {
-                const children = await this.readDirectory(subdirectory);
+            const _exists = await exists(subdirectory);
+            if (_exists) {
+                const children = await readDirectory(subdirectory);
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.subpath, name);
                     if (this.cache_.exists(toUnix(namepath)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
