@@ -2,10 +2,11 @@ import * as path from 'path';
 import { FileTreeItem } from './tree-item';
 import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
 import { diff, Status, } from '../git/extract';
-import { FCUri } from '../internal/uri';
-import { Command, Event, EventEmitter, FileType, FileStat, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
-import * as utilities from '../utilities/file-system';
+import { UriEx } from '../internal/uri';
+import { Command, Event, EventEmitter, FileType, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
+import { exists, readDirectory }from '../utilities/file-system';
 import { toUnix } from '../utilities/path';
+import { removePrefixes } from '../utilities/string';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
@@ -31,70 +32,29 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public refresh(): void {
-        this.cache_ = this.isValid() ? diff(this.left_.fsPath, this.right_.fsPath) : new FileSystemTrie();
+        this.cache_ = this._isValid() ? diff(this.left_.fsPath, this.right_.fsPath) : new FileSystemTrie();
         this._onDidChangeTreeData.fire();
     }
 
-    public isValid(): boolean {
+    public _isValid(): boolean {
         // TODO Fix Uri implementation in regards to consistency
         return this.left_.path !== Uri.parse("").path && this.right_.path !== Uri.parse("").path;
     }
 
-    /* istanbul ignore next: not designed for unit test */
-    private async _stat(path: string): Promise<FileStat> {
-        return new utilities.FileStat(await utilities.stat(path));
-    }
-
-    public exists(path: string): boolean | Thenable<boolean> {
-        return this._exists(path);
-    }
-
-    /* istanbul ignore next: not designed for unit test */
-    private async _exists(path: string): Promise<boolean> {
-        return utilities.exists(path);
-    }
-
-    public readDirectory(directory: string): [string, FileType][] | Thenable<[string, FileType][]> {
-        return this._readDirectory(directory);
-    }
-
-    /* istanbul ignore next: not designed for unit test */
-    private async _readDirectory(directory: string): Promise<[string, FileType][]> {
-        const children = await utilities.readdir(directory);
-
-        const result: [string, FileType][] = [];
-        for (const child of children) {
-            const stat = await this._stat(path.join(directory, child));
-            result.push([child, stat.type]);
-        }
-
-        return Promise.resolve(result);
-    }
-
-    public removePrefix(path: string, left: boolean, right: boolean): string {
-        path = toUnix(path);
-
-        if (right) {
-            path = path.replace(toUnix(this.right_.fsPath), "");
-        }
-
-        if (left) {
-            path = path.replace(toUnix(this.left_.fsPath), "");
-        }
-
-        return path.substring(1);
-    }
-
-    /* istanbul ignore next: TODO refactor */
     public async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
-        if (!this.isValid()) {
-            return [];
+        if (this._isValid()) {
+            childCache = await this._getChildrenFromDisk(element, childCache);
+            childCache = this._getChildrenFromCache(element, childCache);
         }
 
+        return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
+    }
+
+    public async _getChildrenFromDisk(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Promise<Record<string, FileTreeItem>> {
         if (!element) { // getChildren called against root directory
-            const children = await this.readDirectory(this.left_.fsPath);
+            const children = await readDirectory(this.left_.fsPath);
             children.map(([name, type]) => {
                 if (this.cache_.exists(toUnix(name)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
                     childCache[toUnix(name)] = new FileTreeItem(
@@ -107,9 +67,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             });
         } else { // getChildren called against subdirectory
             const subdirectory = path.join(this.left_.fsPath, element.subpath);
-            const exists = await this.exists(subdirectory);
-            if (exists) {
-                const children = await this.readDirectory(subdirectory);
+            const _exists = await exists(subdirectory);
+            if (_exists) {
+                const children = await readDirectory(subdirectory);
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.subpath, name);
                     if (this.cache_.exists(toUnix(namepath)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
@@ -119,18 +79,22 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             toUnix(namepath),
                             type,
                             Status.null);
-                        }
+                    }
                 });
             }
         }
 
-        // Get elements from cache
+        return childCache;
+    }
+
+    public _getChildrenFromCache(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Record<string, FileTreeItem> {
         const directory: string = element ? element.subpath : "";
         const items: FileSystemTrieNode[] = this.cache_.exists(directory) ? this.cache_.getChildren(directory) : [];
         for (const item of items) {
             if (item.key && item.content) {
-                const leftSubpath: string = this.removePrefix(item.content.left, true, true);
-                const rightSubpath: string = this.removePrefix(item.content.right, false, true);
+                // Use .substring(1) to remove leading path seperator
+                const leftSubpath: string = removePrefixes(item.content.left, [this.right_.fsPath, this.left_.fsPath]).substring(1);
+                const rightSubpath: string = removePrefixes(item.content.right, [this.right_.fsPath]).substring(1);
 
                 switch (item.content.status) {
                     case Status.addition:
@@ -178,35 +142,33 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             }
         }
 
-        // Sort children by filetype and alphanumerically
-        let children: FileTreeItem[] = Object.values(childCache);
-        children.sort((a, b) => {
-            if (a.filetype === b.filetype && a.subpath && b.subpath) {
-                return a.subpath.localeCompare(b.subpath);
-            }
-            return a.filetype === FileType.Directory ? -1 : 1;
-        });
-
-        return children;
+        return childCache;
     }
 
-    /* istanbul ignore next: TODO refactor */
+    public _sortByFileTypeAndAlphanumeric(elements: FileTreeItem[]): FileTreeItem[] {
+        elements.sort((left, right) => {
+            if (left.filetype === right.filetype && left.subpath && right.subpath) {
+                return left.subpath.localeCompare(right.subpath);
+            }
+            return left.filetype === FileType.Directory ? -1 : 1;
+        });
+        return elements;
+    }
+
     public getTreeItem(element: FileTreeItem): TreeItem {
-        const resourceUri: FCUri = new FCUri(element.subpath, element.status);
+        const uri: UriEx = new UriEx(element.subpath, element.status);
+        let treeItem = new TreeItem(uri.getUri());
         switch (element.filetype) {
             case FileType.File:
-                const treeItem = new TreeItem(resourceUri.getUri());
-                let command: Command | void = this._getCommand(element);
-                if (command) {
-                    treeItem.command = command;
-                }
+                treeItem.command = this._getCommand(element);
                 treeItem.contextValue = 'file';
-                return treeItem;
+                break;
             case FileType.Directory:
-                return new TreeItem(resourceUri.getUri(), this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed);
-            default:
-                return new TreeItem(resourceUri.getUri());
+                // if exists in cache then change has been made and directory should be expanded
+                treeItem.collapsibleState = this.cache_.exists(element.subpath) ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed;
+                break;
         }
+        return treeItem;
     }
 
     public _getLeftUri(element: FileTreeItem): Uri {
@@ -217,7 +179,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return Uri.file(this.right_.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
-    public _getCommand(element: FileTreeItem): Command | void {
+    public _getCommand(element: FileTreeItem): Command {
         switch (element.status) {
             case Status.addition:
                 return {

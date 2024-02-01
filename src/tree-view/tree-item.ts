@@ -1,12 +1,12 @@
 import { Status, } from '../git/extract';
 import { FileType, TreeItem, Uri } from 'vscode';
 import { toUnix } from '../utilities/path';
-import { FCUri } from '../internal/uri';
+import { UriEx } from '../internal/uri';
 
 export class FileTreeItem extends TreeItem {
     public left: Uri;
     public right: Uri;
-    public _subpath: FCUri;
+    public _subpath: UriEx;
     public filetype: FileType;
     public status: Status;
 
@@ -14,7 +14,7 @@ export class FileTreeItem extends TreeItem {
         super(path);
         this.left = left;
         this.right = right;
-        this._subpath = new FCUri(path, status);
+        this._subpath = new UriEx(path, status);
         this.filetype = filetype;
         this.status = status;
     }
