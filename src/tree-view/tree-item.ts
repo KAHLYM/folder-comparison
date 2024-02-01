@@ -20,6 +20,6 @@ export class FileTreeItem extends TreeItem {
     }
 
     get subpath(): string {
-        return toUnix(this._subpath.getPath()).substring(1);
+        return toUnix(this._subpath.getPath());
     }
 }
