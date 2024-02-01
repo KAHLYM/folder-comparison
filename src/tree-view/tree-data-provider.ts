@@ -5,7 +5,7 @@ import { diff, Status, } from '../git/extract';
 import { UriEx } from '../internal/uri';
 import { Command, Event, EventEmitter, FileType, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
 import { exists, readDirectory }from '../utilities/file-system';
-import { toUnix } from '../utilities/path';
+import { toUnix, trimLeadingPathSeperators } from '../utilities/path';
 import { removePrefixes } from '../utilities/string';
 
 export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
@@ -92,9 +92,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         const items: FileSystemTrieNode[] = this.cache_.exists(directory) ? this.cache_.getChildren(directory) : [];
         for (const item of items) {
             if (item.key && item.content) {
-                // Use .substring(1) to remove leading path seperator
-                const leftSubpath: string = removePrefixes(item.content.left, [this.right_.fsPath, this.left_.fsPath]).substring(1);
-                const rightSubpath: string = removePrefixes(item.content.right, [this.right_.fsPath]).substring(1);
+                const leftSubpath: string = trimLeadingPathSeperators(removePrefixes(item.content.left, [this.right_.fsPath, this.left_.fsPath]));
+                const rightSubpath: string = trimLeadingPathSeperators(removePrefixes(item.content.right, [this.right_.fsPath]));
 
                 switch (item.content.status) {
                     case Status.addition:
@@ -172,11 +171,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public _getLeftUri(element: FileTreeItem): Uri {
-        return Uri.file(this.left_.path.substring(1) + path.posix.sep + element?.subpath);
+        return Uri.file(trimLeadingPathSeperators(this.left_.path) + path.posix.sep + element?.subpath);
     }
 
     public _getRightUri(element: FileTreeItem): Uri {
-        return Uri.file(this.right_.path.substring(1) + path.posix.sep + element?.subpath);
+        return Uri.file(trimLeadingPathSeperators(this.right_.path) + path.posix.sep + element?.subpath);
     }
 
     public _getCommand(element: FileTreeItem): Command {
