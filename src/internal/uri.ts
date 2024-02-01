@@ -5,7 +5,7 @@ import { Uri } from "vscode";
 
 export class UriEx {
     constructor(filepath: string, status: Status) {
-        this._uri = Uri.parse("file-comparison:///" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
+        this._uri = Uri.parse("file-comparison:" + toUnix(filepath) + "?" + getTranslationByEnum(status).string);
     }
 
     public getPath(): string {
