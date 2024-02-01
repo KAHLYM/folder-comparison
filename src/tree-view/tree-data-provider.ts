@@ -155,6 +155,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public getTreeItem(element: FileTreeItem): TreeItem {
+        // Use UriEx so that the schema is (hopefully) unique to this extension so that 
+        // the file-decoration-provider can identify which TreeItems are with reference
+        // to this extension.
         const uri: UriEx = new UriEx(element.subpath, element.status);
         let treeItem = new TreeItem(uri.getUri());
         switch (element.filetype) {
