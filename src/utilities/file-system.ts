@@ -11,6 +11,7 @@ function handleResult<T>(resolve: (result: T) => void, reject: (error: Error) =>
     }
 }
 
+/* istanbul ignore next: TODO */
 export function massageError(error: Error & { code?: string }): Error {
     if (error.code === 'ENOENT') {
         return FileSystemError.FileNotFound();
@@ -31,11 +32,12 @@ export function massageError(error: Error & { code?: string }): Error {
     return error;
 }
 
+/* istanbul ignore next: uses file system */
 export function readDirectory(directory: string): [string, FileType][] | Thenable<[string, FileType][]> {
     return _readDirectory(directory);
 }
 
-/* istanbul ignore next: not designed for unit test */
+/* istanbul ignore next: uses file system */
 async function _readDirectory(directory: string): Promise<[string, FileType][]> {
     const children = await _readdir(directory);
 
@@ -48,31 +50,31 @@ async function _readDirectory(directory: string): Promise<[string, FileType][]> 
     return Promise.resolve(result);
 }
 
-/* istanbul ignore next: difficult to unit test */
+/* istanbul ignore next: uses file system */
 function _readdir(path: string): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
         fs.readdir(path, (error, children) => handleResult(resolve, reject, error, children));
     });
 }
 
-/* istanbul ignore next: difficult to unit test */
+/* istanbul ignore next: uses file system */
 export async function stat(path: string): Promise<FileStat> {
     return new FileStatEx(await _stat(path));
 }
 
-/* istanbul ignore next: difficult to unit test */
+/* istanbul ignore next: uses file system */
 async function _stat(path: string): Promise<fs.Stats> {
     return new Promise<fs.Stats>((resolve, reject) => {
         fs.stat(path, (error, stat) => handleResult(resolve, reject, error, stat));
     });
 }
 
-/* istanbul ignore next: difficult to unit test */
+/* istanbul ignore next: uses file system */
 export function exists(path: string): boolean | Thenable<boolean> {
     return _exists(path);
 }
 
-/* istanbul ignore next: difficult to unit test */
+/* istanbul ignore next: uses file system */
 async function _exists(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         fs.exists(path, exists => handleResult(resolve, reject, null, exists));

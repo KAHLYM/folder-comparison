@@ -60,7 +60,7 @@ export class EntryStateDecorationProvider implements FileDecorationProvider {
         }
     }
 
-    /* istanbul ignore next: difficult to unit test */
+    /* istanbul ignore next: TODO */
     dispose() {
         this._disposables.forEach(dispose => dispose.dispose());
     }

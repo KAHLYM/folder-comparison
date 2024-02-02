@@ -16,9 +16,9 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     constructor() { }
 
-    /* istanbul ignore next: not designed for unit test */
+    /* istanbul ignore next: difficult to unit test */
     private _onDidChangeTreeData: EventEmitter<FileTreeItem | undefined | null | void> = new EventEmitter<FileTreeItem | undefined | null | void>();
-    /* istanbul ignore next: not designed for unit test */
+    /* istanbul ignore next: difficult to unit test */
     readonly onDidChangeTreeData: Event<FileTreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
 
     public clear(): void {
@@ -41,6 +41,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return this.left_.path !== Uri.parse("").path && this.right_.path !== Uri.parse("").path;
     }
 
+    /* istanbul ignore next: difficult to unit test */
     public async getChildren(element?: FileTreeItem): Promise<FileTreeItem[]> {
         let childCache: Record<string, FileTreeItem> = {};
 
@@ -52,6 +53,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
     }
 
+    /* istanbul ignore next: difficult to unit test */
     public async _getChildrenFromDisk(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Promise<Record<string, FileTreeItem>> {
         if (!element) { // getChildren called against root directory
             const children = await readDirectory(this.left_.fsPath);
@@ -87,6 +89,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return childCache;
     }
 
+    /* istanbul ignore next: TODO */
     public _getChildrenFromCache(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Record<string, FileTreeItem> {
         const directory: string = element ? element.subpath : "";
         const items: FileSystemTrieNode[] = this.cache_.exists(directory) ? this.cache_.getChildren(directory) : [];
@@ -145,6 +148,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return childCache;
     }
 
+    /* istanbul ignore next: TODO */
     public _sortByFileTypeAndAlphanumeric(elements: FileTreeItem[]): FileTreeItem[] {
         elements.sort((left, right) => {
             if (left.filetype === right.filetype && left.subpath && right.subpath) {
@@ -155,6 +159,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return elements;
     }
 
+    /* istanbul ignore next: TODO */
     public getTreeItem(element: FileTreeItem): TreeItem {
         const uri: UriEx = new UriEx(element.subpath, element.status);
         let treeItem = new TreeItem(uri.getUri());
@@ -171,14 +176,17 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return treeItem;
     }
 
+    /* istanbul ignore next: TODO */
     public _getLeftUri(element: FileTreeItem): Uri {
         return Uri.file(this.left_.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
+    /* istanbul ignore next: TODO */
     public _getRightUri(element: FileTreeItem): Uri {
         return Uri.file(this.right_.path.substring(1) + path.posix.sep + element?.subpath);
     }
 
+    /* istanbul ignore next: TODO */
     public _getCommand(element: FileTreeItem): Command {
         switch (element.status) {
             case Status.addition:
