@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { EntryStateDecorationProvider } from './file-decroation-provider';
+import { EntryStateDecorationProvider } from './file-decoration-provider';
 import { FileDecoration, Uri } from 'vscode';
 
 suite('file decoration provider', () => {
