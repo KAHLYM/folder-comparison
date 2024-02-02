@@ -54,7 +54,7 @@ suite('tree data provider', () => {
         });
     });
 
-    suite('getLeftUri', () => {
+    suite('_getLeftUri', () => {
         test("return expected uri", () => {
             const tdp_: FileSystemProvider = new FileSystemProvider();
             const left: Uri = Uri.parse("C:/left");
@@ -65,7 +65,7 @@ suite('tree data provider', () => {
         });
     });
 
-    suite('getRightUri', () => {
+    suite('_getRightUri', () => {
         test("return expected uri", () => {
             const tdp_: FileSystemProvider = new FileSystemProvider();
             const left: Uri = Uri.parse("C:/left");
@@ -76,7 +76,7 @@ suite('tree data provider', () => {
         });
     });
 
-    suite('getCommand', () => {
+    suite('_getCommand', () => {
         [
             { left: "C:/left/path.txt", right: "C:/right/path.txt", status: 0, command: "vscode.open" },
             { left: "C:/left/path.txt", right: "C:/right/path.txt", status: 1, command: "vscode.open" },

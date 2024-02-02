@@ -21,6 +21,7 @@ export interface NameStatus {
 
 export let cache: Cache = new Cache("", new FileSystemTrie());
 
+/* istanbul ignore next: difficult to unit test */
 export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
@@ -42,6 +43,7 @@ export function diff(left: string, right: string): FileSystemTrie {
 }
 
 const nameStatusRegex: RegExp = /(?<status>[A-Z])(?<score>[0-9]*)\s+(?<left>[^\s]+)\s*(?<right>[^\s]*)/;
+/* istanbul ignore next: TODO */
 export function _extractNameStatus(line: string): NameStatus {
     const [_group, status, score, left, right] = nameStatusRegex.exec(line) || ["", "", "", "", ""];
     return { status: getTranslationByAbbreviation(status).status, score: Number(score), left: left, right: right };

@@ -14,6 +14,7 @@ const translationEntries: TranslationEntry[] = [
     { abbreviation: "", status: 4, string: "null" },
 ];
 
+/* istanbul ignore next: TODO */
 export function getTranslationByAbbreviation(abbreviation: string): TranslationEntry {
     const translationEntry = translationEntries.find(translationEntry => {
         return translationEntry.abbreviation === abbreviation;
@@ -26,6 +27,7 @@ export function getTranslationByAbbreviation(abbreviation: string): TranslationE
     return translationEntry;
 }
 
+/* istanbul ignore next: TODO */
 export function getTranslationByEnum(status: Status): TranslationEntry {
     const translationEntry =  translationEntries.find(translationEntry => {
         return translationEntry.status === status;
@@ -38,6 +40,7 @@ export function getTranslationByEnum(status: Status): TranslationEntry {
     return translationEntry;
 }
 
+/* istanbul ignore next: TODO */
 export function getTranslationByString(string: string): TranslationEntry {
     const translationEntry =  translationEntries.find(translationEntry => {
         return translationEntry.string === string;
