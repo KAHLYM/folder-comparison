@@ -51,49 +51,45 @@ export async function run(): Promise<void> {
 	};
 
 	const fs = require('fs');
-	fs.readFile(path.join(cwd, 'coverage', 'coverage-summary.html'), 'utf8', function (err: any, data: any) {
-		if (err) {
-			throw err;
-		}
-		const obj = JSON.parse(data);
+	const data = fs.readFileSync(path.join(cwd, 'coverage', 'coverage-summary.json'), { encoding: 'utf8'});
+	const obj = JSON.parse(data);
 
-		const statements: number = parseInt(obj["total"]["statements"]["pct"]);
-		if (statements < threshold["statements"]) {
-			throw Error(`Coverage for statements (${statements}%) does not meet global threshold (${threshold["statements"]}%)`);
-		}
+	const statements: number = parseInt(obj["total"]["statements"]["pct"]);
+	if (statements < threshold["statements"]) {
+		throw Error(`Coverage for statements (${statements}%) does not meet global threshold (${threshold["statements"]}%)`);
+	}
 
-		const branches: number = parseInt(obj["total"]["branches"]["pct"]);
-		if (branches < threshold["branches"]) {
-			throw Error(`Coverage for branches (${branches}%) does not meet global threshold (${threshold["branches"]}%)`);
-		}
+	const branches: number = parseInt(obj["total"]["branches"]["pct"]);
+	if (branches < threshold["branches"]) {
+		throw Error(`Coverage for branches (${branches}%) does not meet global threshold (${threshold["branches"]}%)`);
+	}
 
-		const functions: number = parseInt(obj["total"]["functions"]["pct"]);
-		if (functions < threshold["functions"]) {
-			throw Error(`Coverage for functions (${functions}%) does not meet global threshold (${threshold["functions"]}%)`);
-		}
+	const functions: number = parseInt(obj["total"]["functions"]["pct"]);
+	if (functions < threshold["functions"]) {
+		throw Error(`Coverage for functions (${functions}%) does not meet global threshold (${threshold["functions"]}%)`);
+	}
 
-		const lines: number = parseInt(obj["total"]["lines"]["pct"]);
-		if (lines < threshold["lines"]) {
-			throw Error(`Coverage for lines (${lines}%) does not meet global threshold (${threshold["lines"]}%)`);
-		}
+	const lines: number = parseInt(obj["total"]["lines"]["pct"]);
+	if (lines < threshold["lines"]) {
+		throw Error(`Coverage for lines (${lines}%) does not meet global threshold (${threshold["lines"]}%)`);
+	}
 
-		let filenames: string[] = [];
-		Object.keys(obj).forEach(function(key) {
-			if (key.endsWith(".ts")) {
-				filenames.push(key.split("\\").slice(-1)[0]);
-			}
-		});
-
-		const skipFiles = [
-			'config.ts',
-			'extension.ts'];
-		filenames = filenames.concat(skipFiles);
-
-		const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
-		const sourceFiles = glob.sync('*.ts', { cwd: gitDirectory });
-		const untestedFiles = sourceFiles.filter((file) => !filenames.includes(file));
-		if (0 < untestedFiles.length) {
-			throw Error(`Coverage does not exist for ${untestedFiles.join(', ')}`);
+	let filenames: string[] = [];
+	Object.keys(obj).forEach(function(key) {
+		if (key.endsWith(".ts")) {
+			filenames.push(key.split("\\").slice(-1)[0]);
 		}
 	});
+
+	const skipFiles = [
+		'config.ts',
+		'extension.ts'];
+	filenames = filenames.concat(skipFiles);
+
+	const gitDirectory = path.join(__dirname, '..', '..', '..', 'src');
+	const sourceFiles = glob.sync('*.ts', { cwd: gitDirectory });
+	const untestedFiles = sourceFiles.filter((file) => !filenames.includes(file));
+	if (0 < untestedFiles.length) {
+		throw Error(`Coverage does not exist for ${untestedFiles.join(', ')}`);
+	}
 }
