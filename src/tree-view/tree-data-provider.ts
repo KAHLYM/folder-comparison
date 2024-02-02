@@ -178,17 +178,14 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return treeItem;
     }
 
-    /* istanbul ignore next: TODO */
     public _getLeftUri(element: FileTreeItem): Uri {
         return Uri.file(trimLeadingPathSeperators(this.left_.path) + path.posix.sep + element?.subpath);
     }
 
-    /* istanbul ignore next: TODO */
     public _getRightUri(element: FileTreeItem): Uri {
         return Uri.file(trimLeadingPathSeperators(this.right_.path) + path.posix.sep + element?.subpath);
     }
 
-    /* istanbul ignore next: TODO */
     public _getCommand(element: FileTreeItem): Command {
         switch (element.status) {
             case Status.addition:
