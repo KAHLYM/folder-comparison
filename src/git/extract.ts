@@ -3,6 +3,7 @@ import { FileSystemTrie } from '../data-structures/trie';
 import { workspace } from 'vscode';
 import { getTranslationByAbbreviation } from './translation';
 import { Cache } from '../data-structures/cache';
+import { toUnix } from '../utilities/path';
 
 export enum Status {
     addition,
@@ -26,7 +27,7 @@ export function diff(left: string, right: string): FileSystemTrie {
     let stdout: Buffer;
     try {
         const args = workspace.getConfiguration('folderComparison').get<string[]>('commandArguments');
-        stdout = execSync(`git diff ${args ? args.join(" ") : ""} ${left.replaceAll("\\", "/")} ${right.replaceAll("\\", "/")}`, { timeout: 1000 });
+        stdout = execSync(`git diff ${args ? args.join(" ") : ""} "${toUnix(left)}" "${toUnix(right)}"`, { timeout: 1000 });
     } catch (err: any) {
         stdout = err.stdout;
     }
