@@ -5,8 +5,11 @@ import { execSync } from 'child_process';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { isProduction } from './config';
 import { logger } from './utilities/logger';
+import { randomUUID } from 'crypto';
 
-var path = require('path');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 let reporter: TelemetryReporter;
 const key = isProduction() ? 'c6ac3418-0023-4e5a-9d3b-bdc4a81e6c53' : '8fce904f-cf3a-4160-9107-82c024e9c258';
@@ -61,6 +64,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
+
+		const directory = path.join(os.tmpdir(), randomUUID());
+		fs.mkdirSync(directory);
+
+		const compareFromTempPath = path.join(directory, path.parse(compareFromPath.path).base);
+		const compareToTempPath = path.join(directory, path.parse(compareToPath.path).base);
+
+		fs.cpSync(compareFromPath.fsPath, compareFromTempPath, {recursive: true});
+		fs.cpSync(compareToPath.fsPath, compareToTempPath, {recursive: true});
+
+		compareFromPath = vscode.Uri.parse(compareFromTempPath.substring(0, compareFromTempPath.lastIndexOf('.')));
+		compareToPath = vscode.Uri.parse(compareToTempPath.substring(0, compareToTempPath.lastIndexOf('.')));
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
