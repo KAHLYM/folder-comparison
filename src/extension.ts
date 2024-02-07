@@ -6,6 +6,7 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 import { isProduction } from './config';
 import { logger } from './utilities/logger';
 import { randomUUID } from 'crypto';
+import { extract } from './utilities/unzip';
 
 const fs = require('fs');
 const os = require('os');
@@ -65,17 +66,24 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
 
-		const directory = path.join(os.tmpdir(), randomUUID());
-		fs.mkdirSync(directory);
+		if (vscode.workspace.getConfiguration('folderComparison').get<boolean>('extractCompressed')
+			&& compareFromPath.fsPath.endsWith(".zip") && compareToPath.fsPath.endsWith(".zip")) {
 
-		const compareFromTempPath = path.join(directory, path.parse(compareFromPath.path).base);
-		const compareToTempPath = path.join(directory, path.parse(compareToPath.path).base);
+			const directory = path.join(os.tmpdir(), randomUUID());
+			fs.mkdirSync(directory);
 
-		fs.cpSync(compareFromPath.fsPath, compareFromTempPath, {recursive: true});
-		fs.cpSync(compareToPath.fsPath, compareToTempPath, {recursive: true});
+			const compareFromTempPath = path.join(directory, path.parse(compareFromPath.path).base);
+			const compareToTempPath = path.join(directory, path.parse(compareToPath.path).base);
 
-		compareFromPath = vscode.Uri.parse(compareFromTempPath.substring(0, compareFromTempPath.lastIndexOf('.')));
-		compareToPath = vscode.Uri.parse(compareToTempPath.substring(0, compareToTempPath.lastIndexOf('.')));
+			fs.cpSync(compareFromPath.fsPath, compareFromTempPath, { recursive: true });
+			fs.cpSync(compareToPath.fsPath, compareToTempPath, { recursive: true });
+
+			await extract(compareFromTempPath);
+			await extract(compareToTempPath);
+
+			compareFromPath = vscode.Uri.file(compareFromTempPath.substring(0, compareFromTempPath.lastIndexOf('.')));
+			compareToPath = vscode.Uri.file(compareToTempPath.substring(0, compareToTempPath.lastIndexOf('.')));
+		}
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
