@@ -76,5 +76,7 @@ export function extract(filepath: string) {
             logger.error(`Yauzl caught error e ${e}`);
             reject(e);
         }
+        
+        fs.rmSync(filepath, { recursive: true, force: true });
     });
 }
