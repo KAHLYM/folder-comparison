@@ -66,23 +66,13 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
 
-		if (vscode.workspace.getConfiguration('folderComparison').get<boolean>('extractCompressed')
-			&& compareFromPath.fsPath.endsWith(".zip") && compareToPath.fsPath.endsWith(".zip")) {
-
-			const directory = path.join(os.tmpdir(), randomUUID());
-			fs.mkdirSync(directory);
-
-			const compareFromTempPath = path.join(directory, path.parse(compareFromPath.path).base);
-			const compareToTempPath = path.join(directory, path.parse(compareToPath.path).base);
-
-			fs.cpSync(compareFromPath.fsPath, compareFromTempPath, { recursive: true });
-			fs.cpSync(compareToPath.fsPath, compareToTempPath, { recursive: true });
-
-			await extract(compareFromTempPath);
-			await extract(compareToTempPath);
-
-			compareFromPath = vscode.Uri.file(compareFromTempPath.substring(0, compareFromTempPath.lastIndexOf('.')));
-			compareToPath = vscode.Uri.file(compareToTempPath.substring(0, compareToTempPath.lastIndexOf('.')));
+		if (vscode.workspace.getConfiguration('folderComparison').get<boolean>('extractCompressed')) {
+			const extractedCompareFromPath = compareFromPath.fsPath.endsWith(".zip") ? extractCompressed(compareFromPath) : Promise.resolve(compareFromPath);
+			const extractedCompareToPath = compareToPath.fsPath.endsWith(".zip") ? extractCompressed(compareToPath) : Promise.resolve(compareToPath);
+			await Promise.all([extractedCompareFromPath, extractedCompareToPath]).then(uris => {
+				compareFromPath = uris[0];
+				compareToPath = uris[1];
+			});
 		}
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
@@ -160,6 +150,17 @@ async function warnAboutMissingGit(): Promise<void> {
 		reporter.sendTelemetryEvent('git.warning.dismiss');
 		logger.debug(`User selected to dismiss Git`);
 	}
+}
+
+async function extractCompressed(filepath: vscode.Uri): Promise<vscode.Uri> {
+	const directory = path.join(os.tmpdir(), randomUUID());
+	fs.mkdirSync(directory);
+	const copiedFilePath = path.join(directory, path.parse(filepath.path).base);
+
+	fs.cpSync(filepath.fsPath, copiedFilePath, { recursive: true });
+	await extract(copiedFilePath);
+
+	return  vscode.Uri.file(copiedFilePath.substring(0, copiedFilePath.lastIndexOf('.')));
 }
 
 export function deactivate() { }
