@@ -5,10 +5,11 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 
-function _isDirectory(filepath: any): boolean {
+export function _isDirectory(filepath: any): boolean {
     return /\/$/.test(filepath.fileName);
 }
 
+/* istanbul ignore next: uses file system */
 export function extract(filepath: string) {
     return new Promise<void>((resolve, reject) => {
         try {
