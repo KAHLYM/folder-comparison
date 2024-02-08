@@ -5,8 +5,12 @@ import { execSync } from 'child_process';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { isProduction } from './config';
 import { logger } from './utilities/logger';
+import { randomUUID } from 'crypto';
+import { extract } from './utilities/unzip';
 
-var path = require('path');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 let reporter: TelemetryReporter;
 const key = isProduction() ? 'c6ac3418-0023-4e5a-9d3b-bdc4a81e6c53' : '8fce904f-cf3a-4160-9107-82c024e9c258';
@@ -61,6 +65,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 		vscode.commands.executeCommand('setContext', 'folderComparison.showCompareWithSelected', false);
 		vscode.commands.executeCommand('setContext', 'folderComparison.showViewTitles', true);
+
+		if (vscode.workspace.getConfiguration('folderComparison').get<boolean>('extractCompressed')) {
+			const extractedCompareFromPath = compareFromPath.fsPath.endsWith(".zip") ? extractCompressed(compareFromPath) : Promise.resolve(compareFromPath);
+			const extractedCompareToPath = compareToPath.fsPath.endsWith(".zip") ? extractCompressed(compareToPath) : Promise.resolve(compareToPath);
+			await Promise.all([extractedCompareFromPath, extractedCompareToPath]).then(uris => {
+				compareFromPath = uris[0];
+				compareToPath = uris[1];
+			});
+		}
 
 		fileSystemProvider.update(compareFromPath, compareToPath);
 	});
@@ -137,6 +150,17 @@ async function warnAboutMissingGit(): Promise<void> {
 		reporter.sendTelemetryEvent('git.warning.dismiss');
 		logger.debug(`User selected to dismiss Git`);
 	}
+}
+
+async function extractCompressed(filepath: vscode.Uri): Promise<vscode.Uri> {
+	const directory = path.join(os.tmpdir(), randomUUID());
+	fs.mkdirSync(directory);
+	const copiedFilePath = path.join(directory, path.parse(filepath.path).base);
+
+	fs.cpSync(filepath.fsPath, copiedFilePath, { recursive: true });
+	await extract(copiedFilePath);
+
+	return  vscode.Uri.file(copiedFilePath.substring(0, copiedFilePath.lastIndexOf('.')));
 }
 
 export function deactivate() { }
