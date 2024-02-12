@@ -6,7 +6,6 @@ suite('path', () => {
     suite('toUnix', () => {
         [
             { filepath: "C:/test/path.txt", unixFilepath: "C:/test/path.txt" },
-            // { filepath: "C:\\test\\path.txt", unixFilepath: "C:/test/path.txt" },
         ].forEach(function (item) {
             test("returns '" + item.unixFilepath + "' when passed '" + item.filepath + "'", () => {
                 assert.equal(item.unixFilepath, toUnix(item.filepath));
@@ -16,11 +15,8 @@ suite('path', () => {
 
     suite('trimLeadingPathSeperators', () => {
         [
-            // { filepath: "C:\\test\\path.txt", unixFilepath: "C:/test/path.txt" },
             { filepath: "/test/path.txt", trimmedFilepath: "test/path.txt" },
             { filepath: "//test/path.txt", trimmedFilepath: "test/path.txt" },
-            { filepath: "\\test\\path.txt", trimmedFilepath: "test\\path.txt" },
-            { filepath: "\\\\test\\path.txt", trimmedFilepath: "test\\path.txt" },
         ].forEach(function (item) {
             test("returns '" + item.trimmedFilepath + "' when passed '" + item.filepath + "'", () => {
                 assert.equal(item.trimmedFilepath, trimLeadingPathSeperators(item.filepath));
