@@ -144,7 +144,7 @@
       },
       {
         "command": "folderComparison.selectForCompare",
-        "title": "Select Folder for Compare",
+        "title": "Select for Folder Compare",
         "category": "Folder Comparison"
       },
       {
@@ -179,12 +179,12 @@
       "explorer/context": [
         {
           "command": "folderComparison.selectForCompare",
-          "group": "3_compare@3",
+          "group": "4_compare@4",
           "when": "(explorerResourceIsFolder || (resourceExtname == .zip))"
         },
         {
           "command": "folderComparison.compareWithSelected",
-          "group": "3_compare@4",
+          "group": "4_compare@3",
           "when": "(explorerResourceIsFolder || (resourceExtname == .zip)) && folderComparison.showCompareWithSelected"
         }
       ],
