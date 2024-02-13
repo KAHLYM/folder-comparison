@@ -10,6 +10,7 @@ export enum Status {
     deletion,
     modification,
     rename,
+    intermediate,
     null,
 }
 
@@ -56,7 +57,7 @@ export function _parse(output: string, leftFolder: string, rightFolder: string):
     for (const line of output.split("\n")) {
         const nameStatus = _extractNameStatus(line);
 
-        const intermediate: NameStatus = { status: Status.null, score: 0, left: "", right: "" };
+        const intermediate: NameStatus = { status: Status.intermediate, score: 0, left: "", right: "" };
         switch (nameStatus.status) {
             case Status.addition:
                 trie.add(nameStatus.left.replace(rightFolder, ""), { status: Status.addition, score: nameStatus.score, left: "", right: nameStatus.left }, intermediate);

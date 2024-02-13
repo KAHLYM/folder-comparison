@@ -127,19 +127,18 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                             );
                         }
                         break;
+                    case Status.intermediate:
                     case Status.null:
-                        if (childCache[item.key] === undefined) {
-                            childCache[item.key] = new FileTreeItem(
-                                item.content.left,
-                                item.content.right,
-                                directory === "" ? item.key : directory + path.posix.sep + item.key,
-                                FileType.Directory,
-                                item.content.status
-                            );
-                        }
+                        childCache[item.key] = new FileTreeItem(
+                            item.content.left,
+                            item.content.right,
+                            directory === "" ? item.key : directory + path.posix.sep + item.key,
+                            FileType.Directory,
+                            Status.intermediate
+                        );
+                        break;
                     default:
                         break;
-
                 }
             }
         }
@@ -222,6 +221,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         this._getRightUri(element),
                     ]
                 };
+            case Status.intermediate: // unused
+                    return {
+                        command: 'vscode.open',
+                        title: 'Open'
+                    };
             case Status.null:
                 return {
                     command: 'vscode.open',

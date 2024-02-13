@@ -52,6 +52,11 @@ export class EntryStateDecorationProvider implements FileDecorationProvider {
                 decoration.propagate = true;
                 return decoration;
             }
+            case Status.intermediate: {
+                let decoration: FileDecoration = new FileDecoration("", "", new ThemeColor("folderComparison.color.unchanged"));
+                decoration.propagate = true;
+                return decoration;
+            }
             case Status.null: {
                 let decoration: FileDecoration = new FileDecoration("", "", new ThemeColor("folderComparison.color.ignored"));
                 decoration.propagate = true;

@@ -11,7 +11,8 @@ const translationEntries: TranslationEntry[] = [
     { abbreviation: "D", status: 1, string: "deletion" },
     { abbreviation: "M", status: 2, string: "modification" },
     { abbreviation: "R", status: 3, string: "rename" },
-    { abbreviation: "", status: 4, string: "null" },
+    { abbreviation: "I", status: 4, string: "intermediate" },
+    { abbreviation: "", status: 5, string: "null" },
 ];
 
 /* istanbul ignore next: TODO */
