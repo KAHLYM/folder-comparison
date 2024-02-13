@@ -129,10 +129,11 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                         break;
                     case Status.intermediate:
                     case Status.null:
-                        childCache[item.key] = new FileTreeItem(
+                        const subpath = directory === "" ? item.key : directory + path.posix.sep + item.key;
+                        childCache[subpath] = new FileTreeItem(
                             item.content.left,
                             item.content.right,
-                            directory === "" ? item.key : directory + path.posix.sep + item.key,
+                            subpath,
                             FileType.Directory,
                             Status.intermediate
                         );
