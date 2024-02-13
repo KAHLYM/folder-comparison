@@ -180,12 +180,12 @@
         {
           "command": "folderComparison.selectForCompare",
           "group": "4_compare@4",
-          "when": "(explorerResourceIsFolder || (resourceExtname == .zip))"
+          "when": "(explorerResourceIsFolder || (resourceExtname == .zip && config.folderComparison.extractCompressed))"
         },
         {
           "command": "folderComparison.compareWithSelected",
           "group": "4_compare@3",
-          "when": "(explorerResourceIsFolder || (resourceExtname == .zip)) && folderComparison.showCompareWithSelected"
+          "when": "(explorerResourceIsFolder || (resourceExtname == .zip && config.folderComparison.extractCompressed)) && folderComparison.showCompareWithSelected"
         }
       ],
       "view/title": [
