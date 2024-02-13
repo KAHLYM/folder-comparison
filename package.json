@@ -116,13 +116,13 @@
         }
       },
       {
-        "id": "folderComparison.color.untracked",
-        "description": "Color for untracked resources.",
+        "id": "folderComparison.color.unchanged",
+        "description": "Color for unchanged resources.",
         "defaults": {
-          "light": "#007100",
-          "dark": "#73C991",
-          "highContrast": "#73C991",
-          "highContrastLight": "#007100"
+          "light": "#3B3B3B",
+          "dark": "#CCCCCC",
+          "highContrast": "#FFFFFF",
+          "highContrastLight": "#000000"
         }
       },
       {
