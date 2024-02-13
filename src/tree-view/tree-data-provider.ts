@@ -58,7 +58,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         if (!element) { // getChildren called against root directory
             const children = await readDirectory(this.left_.fsPath);
             children.map(([name, type]) => {
-                if (this.cache_.exists(toUnix(name)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
+                if (this.cache_.exists(toUnix(name)) || workspace.getConfiguration('folderComparison').get<boolean>('view.showUnchanged')) {
                     childCache[toUnix(name)] = new FileTreeItem(
                         Uri.parse(path.join(this.left_.fsPath, name)),
                         Uri.parse(""),
@@ -74,7 +74,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                 const children = await readDirectory(subdirectory);
                 children.map(([name, type]) => {
                     let namepath: string = path.join(element.subpath, name);
-                    if (this.cache_.exists(toUnix(namepath)) || workspace.getConfiguration('folderComparison').get<boolean>('showUnchanged')) {
+                    if (this.cache_.exists(toUnix(namepath)) || workspace.getConfiguration('folderComparison').get<boolean>('view.showUnchanged')) {
                         childCache[toUnix(namepath)] = new FileTreeItem(
                             Uri.parse(path.join(this.left_.fsPath, toUnix(namepath))),
                             Uri.parse(""),
