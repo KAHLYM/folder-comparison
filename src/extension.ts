@@ -118,14 +118,14 @@ export function activate(context: vscode.ExtensionContext) {
 	let refreshInterval = setRefreshInterval();
 
 	vscode.workspace.onDidChangeConfiguration(event => {
-		if (event.affectsConfiguration("folderComparison.refreshInterval")) {
+		if (event.affectsConfiguration("folderComparison.view.refreshInterval")) {
 			clearInterval(refreshInterval);
 			refreshInterval = setRefreshInterval();
-		} else if (event.affectsConfiguration("folderComparison.logLevel")) {
+		} else if (event.affectsConfiguration("folderComparison.debug.logLevel")) {
 			const logLevel = vscode.workspace.getConfiguration('folderComparison').get<string>('logLevel') ?? logger.defaultLevel;
 			logger.info(`User configured log level to be ${logLevel}`);
 			logger.setLogLevel(logLevel);
-		} else if (event.affectsConfiguration("folderComparison.showUnchanged")) {
+		} else if (event.affectsConfiguration("folderComparison.view.showUnchanged")) {
 			fileSystemProvider.refresh();
 		}
 	});
