@@ -35,7 +35,7 @@
     "configuration": {
       "title": "Folder Comparison",
       "properties": {
-        "folderComparison.commandArguments": {
+        "folderComparison.git.commandArguments": {
           "type": "array",
           "default": [
             "--name-status",
@@ -43,14 +43,14 @@
           ],
           "markdownDescription": "Specifies arguments to pass to the `git diff` command"
         },
-        "folderComparison.refreshInterval": {
+        "folderComparison.view.refreshInterval": {
           "type": "number",
           "default": 5,
           "minimum": 5,
           "maximum": 3600,
           "markdownDescription": "Specifies the interval in seconds to refresh the git comparison"
         },
-        "folderComparison.logLevel": {
+        "folderComparison.debug.logLevel": {
           "type": "string",
           "default": "Info",
           "enum": [
@@ -60,9 +60,10 @@
             "Warning",
             "Error",
             "Fatal"
-          ]
+          ],
+          "markdownDescription": "Specifies log level to output"
         },
-        "folderComparison.showUnchanged": {
+        "folderComparison.view.showUnchanged": {
           "type": "boolean",
           "default": "false",
           "markdownDescription": "Specifies whether to show unchanged files"
@@ -77,7 +78,7 @@
     "colors": [
       {
         "id": "folderComparison.color.added",
-        "description": "Color for added resources.",
+        "description": "Color for added resources",
         "defaults": {
           "light": "#587c0c",
           "dark": "#81b88b",
@@ -87,7 +88,7 @@
       },
       {
         "id": "folderComparison.color.modified",
-        "description": "Color for modified resources.",
+        "description": "Color for modified resources",
         "defaults": {
           "light": "#895503",
           "dark": "#E2C08D",
@@ -97,7 +98,7 @@
       },
       {
         "id": "folderComparison.color.deleted",
-        "description": "Color for deleted resources.",
+        "description": "Color for deleted resources",
         "defaults": {
           "light": "#ad0707",
           "dark": "#c74e39",
@@ -107,7 +108,7 @@
       },
       {
         "id": "folderComparison.color.renamed",
-        "description": "Color for renamed or copied resources.",
+        "description": "Color for renamed or copied resources",
         "defaults": {
           "light": "#007100",
           "dark": "#73C991",
@@ -117,7 +118,7 @@
       },
       {
         "id": "folderComparison.color.unchanged",
-        "description": "Color for unchanged resources.",
+        "description": "Color for unchanged resources",
         "defaults": {
           "light": "#3B3B3B",
           "dark": "#CCCCCC",
@@ -127,7 +128,7 @@
       },
       {
         "id": "folderComparison.color.ignored",
-        "description": "Color for ignored resources.",
+        "description": "Color for ignored resources",
         "defaults": {
           "light": "#8E8E90",
           "dark": "#8C8C8C",
