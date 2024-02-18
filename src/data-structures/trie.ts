@@ -22,13 +22,15 @@ export class FileSystemTrie {
         return path ? path.split('/') : [];
     }
 
-    public add(path: string, content: any, intermediate: any): void {
+    public add(path: string, content: any, intermediate: any, update: Function): void {
         let node = this.root;
 
         const keys: string[] = this.splitPath(path);
         for (const key of keys) {
             if (node.children[key] === undefined) {
                 node.children[key] = new FileSystemTrieNode(key, intermediate);
+            } else {
+                node.children[key].content = update(node.children[key].content, intermediate);
             }
 
             node = node.children[key];
