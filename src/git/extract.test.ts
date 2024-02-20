@@ -4,6 +4,16 @@ import { FileSystemTrie } from '../data-structures/trie';
 
 suite('extract', () => {
 
+    suite('_updatehasNoPreRename', () => {
+        test("sets hasNoPreRename", async () => {
+            let before: git.NameStatus = { status: 0, score: 0, left: "", right: "", hasNoPreRename: false};
+            let after: git.NameStatus = { status: 0, score: 0, left: "", right: "", hasNoPreRename: true};
+            assert.equal(false, before.hasNoPreRename);
+            git._updatehasNoPreRename(before, after);
+            assert.equal(true, before.hasNoPreRename);
+        });
+    });
+
     suite('_parse', () => {
         test("return empty trie if empty output", async () => {
             git._parse("", "", "");

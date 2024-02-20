@@ -52,7 +52,7 @@ export function _extractNameStatus(line: string): NameStatus {
     return { status: getTranslationByAbbreviation(status).status, score: Number(score), left: left, right: right, hasNoPreRename: true };
 }
 
-function updatehasNoPreRename(before: any, after: any): any {
+export function _updatehasNoPreRename(before: any, after: any): any {
     let intermediate = before;
     intermediate.hasNoPreRename = after.hasNoPreRename ? true : before.hasNoPreRename;
     return intermediate;
@@ -67,20 +67,20 @@ export function _parse(output: string, leftFolder: string, rightFolder: string):
         const intermediate: NameStatus = { status: Status.intermediate, score: 0, left: "", right: "",  hasNoPreRename: true};
         switch (nameStatus.status) {
             case Status.addition:
-                trie.add(nameStatus.left.replace(rightFolder, ""), { status: Status.addition, score: nameStatus.score, left: "", right: nameStatus.left }, intermediate, updatehasNoPreRename);
+                trie.add(nameStatus.left.replace(rightFolder, ""), { status: Status.addition, score: nameStatus.score, left: "", right: nameStatus.left }, intermediate, _updatehasNoPreRename);
                 break;
             case Status.deletion:
-                trie.add(nameStatus.left.replace(leftFolder, ""), { status: Status.deletion, score: nameStatus.score, left: nameStatus.left, right: "" }, intermediate, updatehasNoPreRename);
+                trie.add(nameStatus.left.replace(leftFolder, ""), { status: Status.deletion, score: nameStatus.score, left: nameStatus.left, right: "" }, intermediate, _updatehasNoPreRename);
                 break;
             case Status.modification:
-                trie.add(nameStatus.left.replace(leftFolder, ""), { status: Status.modification, score: nameStatus.score, left: nameStatus.left, right: nameStatus.right }, intermediate, updatehasNoPreRename);
+                trie.add(nameStatus.left.replace(leftFolder, ""), { status: Status.modification, score: nameStatus.score, left: nameStatus.left, right: nameStatus.right }, intermediate, _updatehasNoPreRename);
                 break;
             case Status.rename:
                 const _nameStatus: NameStatus = { status: Status.rename, score: nameStatus.score, left: nameStatus.left, right: nameStatus.right, hasNoPreRename: true };
                 const nonPreRenameIntermediate = intermediate;
                 nonPreRenameIntermediate.hasNoPreRename = false;
-                trie.add(nameStatus.left.replace(leftFolder, ""), _nameStatus, nonPreRenameIntermediate, updatehasNoPreRename);
-                trie.add(nameStatus.right.replace(rightFolder, ""), _nameStatus, intermediate, updatehasNoPreRename);
+                trie.add(nameStatus.left.replace(leftFolder, ""), _nameStatus, nonPreRenameIntermediate, _updatehasNoPreRename);
+                trie.add(nameStatus.right.replace(rightFolder, ""), _nameStatus, intermediate, _updatehasNoPreRename);
                 break;
         }
     }
