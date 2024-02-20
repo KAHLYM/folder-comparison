@@ -12,9 +12,9 @@ class MockFileSystemTrie extends FileSystemTrie {
 
 function getMockFileSystemTrieExampleOne(): MockFileSystemTrie {
     let trie: MockFileSystemTrie = new MockFileSystemTrie();
-    trie.add("foo/bar.txt", "a", { });
-    trie.add("foo/bar.md", "b", { });
-    trie.add("baz.txt", "c", { });
+    trie.add("foo/bar.txt", "a", { }, function(){});
+    trie.add("foo/bar.md", "b", { }, function(){});
+    trie.add("baz.txt", "c", { }, function(){});
     return trie;
 }
 
@@ -25,7 +25,7 @@ suite('trie', () => {
 
         const key: string = "foo";
         const value: any = null;
-        trie.add(key, value, { });
+        trie.add(key, value, { }, function(){});
 
         assert.equal(true, trie.exists(key));
         assert.equal(value, trie.getContent(key));
@@ -36,7 +36,7 @@ suite('trie', () => {
 
         const key: string = "foo.txt";
         const value: any = null;
-        trie.add(key, value, { });
+        trie.add(key, value, { }, function(){});
 
         assert.equal(true, trie.exists(key));
         assert.equal(value, trie.getContent(key));
@@ -47,7 +47,7 @@ suite('trie', () => {
 
         const key: string = "foo/bar";
         const value: any = "oof";
-        trie.add(key, value, { });
+        trie.add(key, value, { }, function(){});
 
         assert.equal(true, trie.exists('foo'));
         assert.deepEqual({ }, trie.getContent('foo'));
@@ -61,7 +61,7 @@ suite('trie', () => {
 
         const key: string = "foo/bar.txt";
         const value: any = "oof";
-        trie.add(key, value, { });
+        trie.add(key, value, { }, function(){});
 
         assert.equal(true, trie.exists('foo'));
         assert.deepEqual({ }, trie.getContent('foo'));
@@ -75,11 +75,11 @@ suite('trie', () => {
 
         const txtKey: string = "foo/bar.txt";
         const txtValue: any = "txtValue";
-        trie.add(txtKey, txtValue, { });
+        trie.add(txtKey, txtValue, { }, function(){});
 
         const mdKey: string = "foo/bar.md";
         const mdValue: any = "mdValue";
-        trie.add(mdKey, mdValue, { });
+        trie.add(mdKey, mdValue, { }, function(){});
 
         assert.equal(true, trie.exists(txtKey));
         assert.equal(txtValue, trie.getContent(txtKey));
@@ -93,11 +93,11 @@ suite('trie', () => {
 
         const fooKey: string = "foo/baz.txt";
         const fooValue: any = "fooValue";
-        trie.add(fooKey, fooValue, { });
+        trie.add(fooKey, fooValue, { }, function(){});
 
         const barKey: string = "bar/baz.txt";
         const barValue: any = "barValue";
-        trie.add(barKey, barValue, { });
+        trie.add(barKey, barValue, { }, function(){});
 
         assert.equal(true, trie.exists(fooKey));
         assert.equal(fooValue, trie.getContent(fooKey));
@@ -144,7 +144,7 @@ suite('trie', () => {
 
         let trie: MockFileSystemTrie = new MockFileSystemTrie();
         const path: string = "foo/bar/baz.txt";
-        trie.add(path, null, { });
+        trie.add(path, null, { }, function(){});
         [
             { exists: true, path: "" },
             { exists: true, path: "foo" },

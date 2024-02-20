@@ -54,12 +54,28 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     /* istanbul ignore next: difficult to unit test */
+    public isFileExistsAndInCache(path: string, type: FileType): Boolean {
+        return type === FileType.File && this.cache_.exists(path);
+    }
+
+    /* istanbul ignore next: difficult to unit test */
+    public isDirectoryAndHasNoPreRename(path: string, type: FileType): Boolean {
+        return type === FileType.Directory && 
+            this.cache_.exists(path) &&
+            (this.cache_.getContent(path) ? this.cache_.getContent(path).hasNoPreRename : true);
+    }
+
+    /* istanbul ignore next: difficult to unit test */
     public async _getChildrenFromDisk(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Promise<Record<string, FileTreeItem>> {
         if (!element) { // getChildren called against root directory
             const children = await readDirectory(this.left_.fsPath);
             children.map(([name, type]) => {
-                if (this.cache_.exists(toUnix(name)) || workspace.getConfiguration('folderComparison').get<boolean>('view.showUnchanged')) {
-                    childCache[toUnix(name)] = new FileTreeItem(
+                const unixName: string = toUnix(name);
+                if (this.isFileExistsAndInCache(unixName, type) ||
+                    this.isDirectoryAndHasNoPreRename(unixName, type) ||
+                    workspace.getConfiguration('folderComparison').get<boolean>('view.showUnchanged')) {
+
+                    childCache[unixName] = new FileTreeItem(
                         Uri.parse(path.join(this.left_.fsPath, name)),
                         Uri.parse(""),
                         name,
@@ -73,12 +89,15 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
             if (_exists) {
                 const children = await readDirectory(subdirectory);
                 children.map(([name, type]) => {
-                    let namepath: string = path.join(element.subpath, name);
-                    if (this.cache_.exists(toUnix(namepath)) || workspace.getConfiguration('folderComparison').get<boolean>('view.showUnchanged')) {
-                        childCache[toUnix(namepath)] = new FileTreeItem(
-                            Uri.parse(path.join(this.left_.fsPath, toUnix(namepath))),
+                    const unixName: string = toUnix(path.join(element.subpath, name));
+                    if (this.isFileExistsAndInCache(unixName, type) ||
+                        this.isDirectoryAndHasNoPreRename(unixName, type) ||
+                        workspace.getConfiguration('folderComparison').get<boolean>('view.showUnchanged')) {
+
+                        childCache[unixName] = new FileTreeItem(
+                            Uri.parse(path.join(this.left_.fsPath, unixName)),
                             Uri.parse(""),
-                            toUnix(namepath),
+                            unixName,
                             type,
                             Status.null);
                     }
@@ -92,7 +111,8 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     /* istanbul ignore next: TODO */
     public _getChildrenFromCache(element: FileTreeItem | undefined, childCache: Record<string, FileTreeItem>): Record<string, FileTreeItem> {
         const directory: string = element ? element.subpath : "";
-        const items: FileSystemTrieNode[] = this.cache_.exists(directory) ? this.cache_.getChildren(directory) : [];
+        const unixDirectory: string = toUnix(directory);
+        const items: FileSystemTrieNode[] = this.isDirectoryAndHasNoPreRename(unixDirectory, FileType.Directory) ? this.cache_.getChildren(unixDirectory) : [];
         for (const item of items) {
             if (item.key && item.content) {
                 const leftSubpath: string = trimLeadingPathSeperators(removePrefixes(item.content.left, [this.right_.fsPath, this.left_.fsPath]));
@@ -117,15 +137,14 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     case Status.rename:
                         if (childCache[leftSubpath] !== undefined) {
                             delete childCache[leftSubpath];
-                        } else if (childCache[rightSubpath] !== undefined) {
-                            childCache[rightSubpath] = new FileTreeItem(
-                                item.content.left,
-                                item.content.right,
-                                rightSubpath,
-                                FileType.File,
-                                item.content.status
-                            );
                         }
+                        childCache[rightSubpath] = new FileTreeItem(
+                            item.content.left,
+                            item.content.right,
+                            rightSubpath,
+                            FileType.File,
+                            item.content.status
+                        );
                         break;
                     case Status.intermediate:
                     case Status.null:
