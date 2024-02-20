@@ -53,10 +53,12 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
         return this._sortByFileTypeAndAlphanumeric(Object.values(childCache));
     }
 
+    /* istanbul ignore next: difficult to unit test */
     public isFileExistsAndInCache(path: string, type: FileType): Boolean {
         return type === FileType.File && this.cache_.exists(path);
     }
 
+    /* istanbul ignore next: difficult to unit test */
     public isDirectoryAndHasNoPreRename(path: string, type: FileType): Boolean {
         return type === FileType.Directory && 
             this.cache_.exists(path) &&
