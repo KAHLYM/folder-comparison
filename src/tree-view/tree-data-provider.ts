@@ -4,7 +4,7 @@ import { FileSystemTrie, FileSystemTrieNode } from '../data-structures/trie';
 import { diff, Status, } from '../git/extract';
 import { UriEx } from '../internal/uri';
 import { Command, Event, EventEmitter, FileType, TreeDataProvider, TreeItemCollapsibleState, TreeItem, Uri, workspace } from 'vscode';
-import { exists, readDirectory }from '../utilities/file-system';
+import { exists, readDirectory } from '../utilities/file-system';
 import { toUnix, trimLeadingPathSeperators } from '../utilities/path';
 import { removePrefixes } from '../utilities/string';
 
@@ -32,7 +32,17 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
     }
 
     public refresh(): void {
-        this.cache_ = this._isValid() ? diff(this.left_.fsPath, this.right_.fsPath) : new FileSystemTrie();
+        try {
+            this.cache_ = this._isValid() ? diff(this.left_.fsPath, this.right_.fsPath) : new FileSystemTrie();
+
+        } catch (error) {
+            if (error instanceof RangeError) {
+                // Error reported in #80 is very noisy so silence for now.
+            } else {
+                throw error;
+            }
+        }
+
         this._onDidChangeTreeData.fire();
     }
 
@@ -60,7 +70,7 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
 
     /* istanbul ignore next: difficult to unit test */
     public isDirectoryAndHasNoPreRename(path: string, type: FileType): Boolean {
-        return type === FileType.Directory && 
+        return type === FileType.Directory &&
             this.cache_.exists(path) &&
             (this.cache_.getContent(path) ? this.cache_.getContent(path).hasNoPreRename : true);
     }
@@ -242,10 +252,10 @@ export class FileSystemProvider implements TreeDataProvider<FileTreeItem> {
                     ]
                 };
             case Status.intermediate: // unused
-                    return {
-                        command: 'vscode.open',
-                        title: 'Open'
-                    };
+                return {
+                    command: 'vscode.open',
+                    title: 'Open'
+                };
             case Status.null:
                 return {
                     command: 'vscode.open',
