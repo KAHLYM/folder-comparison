@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Update raising error RangeError temporarily 
+- Update raising RangeError temporarily 
 
 ## [0.11.0] - 2024-02-20
 
